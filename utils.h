@@ -10,6 +10,7 @@
 #include <iostream>
 #include <set>
 #include <iterator>
+#include <algorithm>
 
 #define random(s,e) (rand()%e+s)
 
