@@ -26,7 +26,6 @@ vector<vector<int>> reconstructQueue(vector<vector<int>>& people) {
 }
 
 
-
 // 测试set插入时候的比较
 class Envelopes{
 

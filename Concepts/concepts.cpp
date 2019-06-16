@@ -6,11 +6,35 @@
 
 using namespace std;
 
-// 为什么引用如此好用
+// C++是一种静态数据类型语言，它的类型检查发生在编译时
+
+// 类型float和double 分别有7个和16个有效位 一般来说执行浮点数使用double，因为float通常精度不够而且
+// 双精度浮点数和单精度浮点数的计算代价相差无几
+
+// 类型转换 不要混用符号类型和无符号类型 因为带符号数会自动地转换成无符号数 下面两者加起来的值是未知的
+// test_a*test_b 值为 4294967295
+int test_a = -1;
+unsigned int test_b = 1;
+
+// 字符和字符串类型 字符串会在后头多一个 '\0'空字符
+char a = 'a';
+char a_str[2] = "a";
+
+// 列表初始化，这个是C11新出来的标准 以下四种都代表一个方式
+//int unit_sold = 0;
+//int unit_sold = {0};
+//int unit_sold(0);
+int unit_sold{0};
+
+
+
+
+// 为什么引用如此好用 引用必须被初始化 引用只能绑定在对象上，不能与某个字面值或者某个表达式的计算结果绑定在一起
 //int temp = 1;
 //int& temp1 = temp;
 ////如果换成指针 那么取值的还需要加上 *才可以取值 赋值也同样如此
 //int* temp2 = &temp;
+
 
 /*-- for loop --*/
 //std::vector<int> v = {0, 1, 2, 3, 4, 5};
@@ -40,6 +64,7 @@ using namespace std;
 //    for (int n : a)
 //        std::cout << 1 << ' '; // the loop variable need not be used
 //}
+
 
 /*-- const-, volatile-, and ref-qualified member functions --*/
 //struct Array {
