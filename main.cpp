@@ -15,14 +15,9 @@
 using namespace std;
 
 
-
-
-
 int main() {
 
-    int test_a = -1;
-    unsigned int test_b = 1;
-    cout << test_a*test_b;
+
 
     return 0;
 
