@@ -23,6 +23,7 @@ void multiset_example();
 bool IsBig_Endian();
 
 
+vector<int> mergeSort(vector<int>& array, int begin, int end);
 
 
 

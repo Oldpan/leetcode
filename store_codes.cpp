@@ -17,34 +17,34 @@
  * */
 
 
-using namespace std;
-void dfs(const int &n, int k, vector<int>&choose) {
-    if (k == 0) {
-        for (int i = 0; i <= n; ++i) {
-            int c = choose[i];
-            while (c > 0) {
-                cout << '|';
-                c--;
-            }
-            if (i != n)
-                cout << '*';
-        }
-        cout << endl;
-        return;
-    }
-    for (int i = n; i >= 0; --i) {
-        choose[i]++;
-        dfs(n, k - 1, choose);
-        choose[i]--;
-    }
-}
-
-int main() {
-    int n, k;
-    cin >> n >> k;
-    int num_of_pack = pow(n + 1, k - 1);
-    cout << num_of_pack<<endl;
-    vector<int>choose(n + 1, 0);
-    dfs(n, k - 1, choose);
-    return 0;
-}
+//using namespace std;
+//void dfs(const int &n, int k, vector<int>&choose) {
+//    if (k == 0) {
+//        for (int i = 0; i <= n; ++i) {
+//            int c = choose[i];
+//            while (c > 0) {
+//                cout << '|';
+//                c--;
+//            }
+//            if (i != n)
+//                cout << '*';
+//        }
+//        cout << endl;
+//        return;
+//    }
+//    for (int i = n; i >= 0; --i) {
+//        choose[i]++;
+//        dfs(n, k - 1, choose);
+//        choose[i]--;
+//    }
+//}
+//
+//int main() {
+//    int n, k;
+//    cin >> n >> k;
+//    int num_of_pack = pow(n + 1, k - 1);
+//    cout << num_of_pack<<endl;
+//    vector<int>choose(n + 1, 0);
+//    dfs(n, k - 1, choose);
+//    return 0;
+//}

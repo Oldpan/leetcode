@@ -1,7 +1,3 @@
-//
-// Created by prototype on 18-12-17.
-//
-
 #include "concepts.h"
 
 using namespace std;
@@ -129,6 +125,15 @@ int unit_sold{0};
 //}
 //
 //test(3,1,2,3);
+
+// try catch
+
+// 异常既然是一份数据，那么就应该有数据类型。C++ 规定，异常类型可以是 int、char、float、bool 等基本类型，
+// 也可以是指针、数组、字符串、结构体、类等聚合类型。C++ 语言本身以及标准库中的函数抛出的异常，
+// 都是 exception 类或其子类的异常。也就是说，抛出异常时，会创建一个 exception 类或其子类的对象。
+
+
+
 
 
 

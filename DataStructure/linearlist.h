@@ -2,8 +2,34 @@
 #define LEETCODE_LINEARLIST_H
 
 #include <ostream>
+#include <iostream>
 
 using namespace std;
+
+
+class illegalParameterValue
+{
+public:
+    illegalParameterValue(const string& str):
+            message(str){}
+    illegalParameterValue(char* theMessage)
+    {message = theMessage;}
+    void outputMessage() {cout << message << endl;}
+private:
+    string message;
+};
+
+class illegalIndex
+{
+public:
+illegalIndex(string str):
+            message(std::move(str)){}
+    illegalIndex(char* theMessage)
+    {message = theMessage;}
+    void outputMessage() {cout << message << endl;}
+private:
+    string message;
+};
 
 
 // 顺序表、线性表的抽象类 抽象类不能生成具体类
@@ -18,9 +44,9 @@ public:
     virtual bool empty() const = 0;
     virtual int size() const = 0;
     virtual T& get(int index) const = 0;
-    virtual int indexOf(const T& element) const = 0;
+    virtual int indexOf(const T& theElement) const = 0;
     virtual void erase(int index) = 0;
-    virtual void insert(int index, const T& element) = 0;
+    virtual void insert(int index, const T& theElement) = 0;
     virtual void output(ostream& out) const = 0;
 };
 
@@ -36,9 +62,9 @@ public:
     bool empty() const {return listSize == 0;}
     int size() const {return listSize;}
     T& get(int index) const;
-    int indexOf(const T& element) const;
+    int indexOf(const T& theElement) const;
     void erase(int index);
-    void insert(int index, const T& element);
+    void insert(int index, const T& theElement);
     void output(ostream& out) const;
 
     int capacity() const {return arrayLength;}

@@ -71,6 +71,44 @@ private:
 
 
 
+/*------------------排序集合-------------------*/
+
+// 归并排序
+
+static vector<int> my_merge(vector<int> left, vector<int> right)
+{
+    vector<int> result;
+    int count_l = 0;
+    int count_r = 0;
+
+    while(count_l < left.size() && count_r < right.size())
+    {
+        if(left[count_l] < right[count_r])
+            result.push_back(left[count_l++]);
+        else
+            result.push_back(right[count_r++]);
+    }
+
+    while(count_l < left.size())
+        result.push_back(left[count_l++]);
+    while(count_r < right.size())
+        result.push_back(right[count_r++]);
+
+    return result;
+}
+
+
+vector<int> mergeSort(vector<int>& array, int begin, int end)
+{
+    if(end - begin < 2)
+        return vector<int>(array.begin()+begin, array.begin()+end);
+
+    int mid = begin + (end - begin) / 2;
+
+    return my_merge(mergeSort(array, begin, mid),
+                    mergeSort(array, mid, end));
+}
+
 
 /*--------------------------------判断大小端----------------------------------*/
 
