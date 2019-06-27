@@ -6,7 +6,7 @@
 
 
 
-
+void test_init_arraylist_chainnode();
 
 
 
