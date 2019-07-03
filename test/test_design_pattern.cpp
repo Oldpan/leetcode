@@ -2,13 +2,13 @@
 #include "../Concepts/design_pattern.h"
 #include <iostream>
 
-
 //void test_simple_factory()
 //{
 //    IDoor* door = DoorFactory::MakeDoor(100, 200);
 //    std::cout << "Width: " << door->GetWidth() << std::endl;
 //    std::cout << "Height: " << door->GetHeight() << std::endl;
 //}
+
 
 void test_normal_factory()
 {

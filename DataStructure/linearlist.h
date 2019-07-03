@@ -7,6 +7,7 @@
 #include <sstream>
 #include <string>
 
+// 其实不建议在头文件中使用using 有空了改一下
 using namespace std;
 
 class illegalParameterValue
@@ -15,7 +16,7 @@ public:
     illegalParameterValue(const string& str):
             message(str){}
     illegalParameterValue(char* theMessage)
-    {message = theMessage;}
+            {message = theMessage;}
     void outputMessage() {cout << message << endl;}
 private:
     string message;

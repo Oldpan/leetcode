@@ -9,6 +9,6 @@ message("opencv include " ${OpenCV_INCLUDE_DIRS})
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(leetcode ${Sources} ${Includes} Concepts/design_pattern.cpp Concepts/design_pattern.h test/test_design_pattern.cpp test/test_design_pattern.h)
+add_executable(leetcode ${Sources} ${Includes} test/test_concepts.h)
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 target_link_libraries( leetcode ${OpenCV_LIBS})
