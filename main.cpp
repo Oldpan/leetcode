@@ -22,7 +22,8 @@ using namespace std;
 int main() {
 
 //    image_read();
-    test_throw();
+//    test_throw();
+    test_shared_ptr();
 
     return 0;
 
