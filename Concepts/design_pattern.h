@@ -6,6 +6,7 @@
 #define LEETCODE_DESIGN_PATTERN_H
 
 #include <iostream>
+#include <vector>
 
 // 关于这些代码的讲解网站:https://segmentfault.com/a/1190000010706695
 
@@ -41,6 +42,25 @@
 //        return new WoodenDoor(width, heigh);
 //    }
 //};
+
+
+// 确保一个特定类的一个对象, 只能创建一次.
+// 实际上, 单利模式常被认为是反模式, 要避免过度使用. 它本质上类似全局变量, 可能会造成耦合度过高的问题,
+// 也可能给调试带来困难，故而一定要谨慎使用
+
+class President {
+public:
+    static President& GetInstance() {
+        static President instance;
+        return instance;
+    }
+
+    President(const President&) = delete;                // 禁止使用编译器默认生成的函数
+    President& operator=(const President&) = delete;     // 禁止使用编译器默认生成的函数
+
+private:
+    President() {}                      //
+};
 
 
 // 如果你主管招聘, 你肯定无法做到什么职位都由你一个人来面试. 根据具体的工作性质, 你需要选择并委托不同的人来按步骤进行面试.
@@ -184,9 +204,6 @@ private:
     Burger* burger_;
 };
 
-
-
-
 class ILion {
 public:
     virtual void Roar() {
@@ -221,6 +238,109 @@ public:
     }
 private:
     WildDog& dog_;
+};
+
+
+/*-------------------------观察者---------------------------*/
+// 又被称为发布-订阅模式. 但无论叫什么, 其实本质都是注入+回调. 订阅是注入的时机,
+// 发布是回调的时机. 观察是注入的时机, 通知是回调的时机. 在实践中, 通常会维护一个订阅列表,
+// 有点类似邮件列表. 发布通知时, 会迭代每一个注入对象, 并执行回调.
+
+class JobPost {
+public:
+    JobPost(const std::string& title): title_(title) {}
+    const std::string& GetTitle() const { return title_; }
+private:
+    std::string title_;
+};
+
+class IObserver {
+public:
+    virtual void OnJobPosted(const JobPost& job) = 0;
+};
+
+class JobSeeker : public IObserver {
+public:
+    JobSeeker(const std::string& name): name_(name) {}
+    void OnJobPosted(const JobPost &job) override {
+        std::cout << "Hi " << name_ << "! New job posted: " << job.GetTitle() << std::endl;
+    }
+private:
+    std::string name_;
+};
+
+class IObservable {
+public:
+    virtual void Attach(IObserver& observer) = 0;
+    virtual void AddJob(const JobPost& jobPosting) = 0;
+protected:
+    virtual void Notify(const JobPost& jobPosting) = 0;
+};
+
+class JobPostings : public IObservable {
+public:
+    void Attach(IObserver& observer) override {
+        observers_.push_back(observer);
+    }
+    void AddJob(const JobPost &jobPosting) override {
+        Notify(jobPosting);
+    }
+private:
+    void Notify(const JobPost &jobPosting) override {
+        for (IObserver& observer : observers_)
+            observer.OnJobPosted(jobPosting);
+    }
+
+    std::vector<std::reference_wrapper<IObserver>> observers_;
+};
+
+
+/*--------------------------观察者----------------------------*/
+
+
+class AnimalOperation;
+
+// visitee
+class Animal {
+public:
+    virtual void Accept(AnimalOperation& operation) = 0;
+};
+
+class Monkey;
+class Lion;
+class Dolphin;
+
+// visitor
+class AnimalOperation {
+public:
+    virtual void visitMonkey(Monkey& monkey) = 0;
+    virtual void visitLion(Lion& lion) = 0;
+    virtual void visitDolphin(Dolphin& dolphin) = 0;
+};
+
+class Monkey : public Animal {
+public:
+    void Shout() { std::cout << "Ooh oo aa aa!" << std::endl; }
+    void Accept(AnimalOperation& operation) override { operation.visitMonkey(*this); }
+};
+
+class Lion : public Animal {
+public:
+    void Roar() { std::cout << "Roaaar!" << std::endl; }
+    void Accept(AnimalOperation& operation) override { operation.visitLion(*this); }
+};
+
+class Dolphin : public Animal {
+public:
+    void Speak() { std::cout << "Tuut tuttu tuutt!" << std::endl; }
+    void Accept(AnimalOperation& operation) override { operation.visitDolphin(*this); }
+};
+
+class Speak : public AnimalOperation {
+public:
+    void visitMonkey(Monkey& monkey) override { monkey.Shout(); }
+    void visitLion(Lion& lion) override { lion.Roar(); }
+    void visitDolphin(Dolphin& dolphin) override { dolphin.Speak(); }
 };
 
 

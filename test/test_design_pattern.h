@@ -6,3 +6,6 @@
 #define LEETCODE_TEST_DESIGN_PATTERN_H
 
 #endif //LEETCODE_TEST_DESIGN_PATTERN_H
+
+void test_observer();
+void test_singleton();

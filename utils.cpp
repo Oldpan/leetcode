@@ -110,6 +110,51 @@ vector<int> mergeSort(vector<int>& array, int begin, int end)
 }
 
 
+// 堆排序
+
+// 调整数组中index位置的数组 使其满足最小根的性质
+void heap_insert(vector<int>& array, int index)
+{
+    while (array[index] > array[(index-1)/2])
+    {
+        my_swap(array[index], array[(index-1)/2]);
+        index = (index - 1)/2;
+    }
+}
+
+// 将从 0 到 headsize 的数组转化为最大堆
+void heapify(vector<int>& array, int heapsize)
+{
+    for(int i = 0; i < heapsize; i ++)
+        heap_insert(array, i);
+}
+
+
+void heapSort(vector<int>& array)
+{
+    if(array.empty() || array.size() < 2)
+        return;
+
+    for(int i = 0; i < array.size(); i ++)
+    {
+        heap_insert(array, i);
+    }
+
+    int heapsize = static_cast<int>(array.size());
+    my_swap(array[0], array[heapsize-1]);
+    heapsize --;
+
+    while (heapsize > 0){
+        heapify(array, heapsize);
+        my_swap(array[0], array[heapsize-1]);
+        heapsize --;
+    }
+}
+
+
+
+
+
 /*--------------------------------判断大小端----------------------------------*/
 
 bool IsBig_Endian()
@@ -127,13 +172,16 @@ bool IsBig_Endian()
 
 
 /*-------------------------------数字变字符串----------------------------------*/
-
+// 使用 to_string函数 也可以实现 数字变string
 char* number2char(int n)
 {
     static char strN[50];
     sprintf(strN, "%d", n);     // 默认会在char后面补 \0 字符串结束符
     return strN;
 }
+//可以 int test = 123;
+//    char* temp = number2char(test);
+//    string tempp = static_cast<string>(temp);
 
 /*--------------------------------快速交换-----------------------------------*/
 
@@ -144,6 +192,28 @@ void my_swap(int& a, int& b)
     a = temp^a;
     b = temp^b;
 }
+
+/*-----模仿迭代器-----*/
+// 写法1
+int sum_1(int* begin, int* end){
+    int n = end - begin;
+    int ans = 0;
+    for(int i = 0; i < n; i ++)
+        ans += begin[i];
+    return ans;
+}
+
+// 写法2更高级点，事实上也更具一般性
+int sum_2(int *begin, int* end){
+    int *p = begin;
+    int ans = 0;
+    for(int *p = begin; p != end; p++)
+        ans += *p;
+    return ans;
+}
+// 调用的时候
+//sum(a, a+10);     // 计算长度为10的数组a的和
+//sum(a+i, a+j+1);  // 计算a[i],a[i+1],...a[j]的和
 
 
 /*-----------------------------快速排序的核心代码-----------------------------------*/
@@ -297,46 +367,6 @@ void multiset_example()
 
 }
 
-/*-------------------------------堆排序----------------------------------*/
-
-// 调整数组中index位置的数组 使其满足最小根的性质
-void heap_insert(vector<int>& array, int index)
-{
-    while (array[index] > array[(index-1)/2])
-    {
-        my_swap(array[index], array[(index-1)/2]);
-        index = (index - 1)/2;
-    }
-}
-
-// 将从 0 到 headsize 的数组转化为最大堆
-void heapify(vector<int>& array, int heapsize)
-{
-    for(int i = 0; i < heapsize; i ++)
-        heap_insert(array, i);
-}
-
-
-void heapSort(vector<int>& array)
-{
-    if(array.empty() || array.size() < 2)
-        return;
-
-    for(int i = 0; i < array.size(); i ++)
-    {
-        heap_insert(array, i);
-    }
-
-    int heapsize = static_cast<int>(array.size());
-    my_swap(array[0], array[heapsize-1]);
-    heapsize --;
-
-    while (heapsize > 0){
-        heapify(array, heapsize);
-        my_swap(array[0], array[heapsize-1]);
-        heapsize --;
-    }
-}
 
 
 

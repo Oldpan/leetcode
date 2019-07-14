@@ -2,8 +2,10 @@
 // Created by 郭彦宗 on 2019-07-03.
 //
 
+#include <vector>
 #include "test_concepts.h"
 #include "../DataStructure/linearlist.h"
+#include "../DataStructure/matrix.h"
 
 int test_add(int a, int b)
 {
@@ -60,6 +62,77 @@ void test_shared_ptr()
 //    A* p = new A(10);
 //    shared_ptr <A> sp1(p), sp2(p);
 
+}
 
+void printVec(vector<int> nums)
+{
+    for (int i = 0; i < nums.size(); ++i)
+        cout << nums[i] << " ";
+    cout << endl;
+}
+
+// https://blog.csdn.net/qq_29630271/article/details/66478256
+void test_max_heap()
+{
+    int nums_temp[] = {8, 3, 4, 8, 9, 2, 3, 4, 10};
+    vector<int> nums(nums_temp, nums_temp + 9);
+    cout << "make_heap之前: ";
+    printVec(nums);
+
+    cout << "(默认(less))make_heap: ";
+    make_heap(nums.begin(), nums.end());
+    printVec(nums);
+
+    cout << "(less)make_heap: ";
+    make_heap(nums.begin(), nums.end(), less<int> ());
+    printVec(nums);
+
+    cout << "(greater)make_heap: ";
+    make_heap(nums.begin(), nums.end(), greater<int> ());
+    printVec(nums);
+
+    cout << "此时，nums为小顶堆 greater" << endl;
+    cout << "push_back(3)" << endl;
+    nums.push_back(3);
+    cout << "默认(less)push_heap 此时push_heap失败: ";
+    push_heap(nums.begin(), nums.end());
+    printVec(nums);
+    cout << "push_heap为greater 和make_heap一致，此时push_heap成功: ";
+    push_heap(nums.begin(), nums.end(), greater<int>());
+    printVec(nums);
+    cout << "(greater,不然会失败)pop_heap: ";
+    pop_heap(nums.begin(), nums.end(),greater<int>());  // 必须先pop_head后才能对原始的nums进行pop_back()
+    printVec(nums);
+    cout << "pop_back(): ";
+    nums.pop_back();
+    printVec(nums);
+
+}
+
+void test_matrix_mul()
+{
+    auto matrix_1 = new matrix<int>(2,3);
+    auto matrix_2 = new matrix<int>(3,2);
+
+    auto matrix1_data = matrix_1->data();
+    auto matrix2_data = matrix_2->data();
+
+    matrix1_data[0] = 1;
+    matrix1_data[1] = 2;
+    matrix1_data[2] = 3;
+    matrix1_data[3] = 4;
+    matrix1_data[4] = 5;
+    matrix1_data[5] = 6;
+
+    matrix2_data[0] = 1;
+    matrix2_data[1] = 2;
+    matrix2_data[2] = 2;
+    matrix2_data[3] = 3;
+    matrix2_data[4] = 3;
+    matrix2_data[5] = 4;
+
+    matrix<int> result = (*matrix_1) * (*matrix_2);
+    for (int i = 0; i < result.size(); i ++)
+        cout << result.data()[i];
 
 }

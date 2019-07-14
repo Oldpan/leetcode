@@ -16,6 +16,7 @@
 
 using namespace std;
 
+char* number2char(int n);
 void my_swap(int& a, int& b);
 int partition(vector<int>& data, int start, int end);
 void set_example();

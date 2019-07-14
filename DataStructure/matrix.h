@@ -6,18 +6,6 @@
 #include <iostream>
 #include "linearlist.h"
 
-class illegalParameterValue
-{
-public:
-    illegalParameterValue(const std::string& str):
-            message(str){}
-    illegalParameterValue(char* theMessage)
-    {message = theMessage;}
-    void outputMessage() {std::cout << message << std::endl;}
-private:
-    std::string message;
-};
-
 class matrixIndexOutOfBounds
 {
 public:
@@ -62,6 +50,8 @@ public:
     matrix<T> operator-(const matrix<T>&) const;
     matrix<T> operator*(const matrix<T>&) const;
     matrix<T>& operator+=(const T&);
+    T* data() {return element;}                     // 返回原始地址
+    int size() const {return theRows*theColumns;}
 
 private:
     int theRows;
@@ -115,9 +105,9 @@ matrix<T>& matrix<T>::operator=(const matrix<T> & m)
 template <class T>
 T& matrix<T>::operator()(int i, int j) const
 {
-    if (i < 1 || i > theRows || j < 1 || j > theColumns)
+    if (i < 0 || i >= theRows || j < 0 || j >= theColumns)
         throw matrixIndexOutOfBounds();
-    return element[(i-1) * theColumns + j - 1];
+    return element[i * theColumns + j];    // 对着了
 }
 
 template <class T>
@@ -141,22 +131,28 @@ matrix<T> matrix<T>::operator*(const matrix<T>& m) const
         throw matrixSizeMismatch();
 
     matrix<T> w(theRows, m.theColumns);  // 结构矩阵
-    // 定义矩阵 *this, m和w的游标且初始化以为(1,1)元素定位
+    // 定义矩阵 *this, m和w的游标且初始化以为(0,0)元素定位
     int ct = 0, cm = 0, cw = 0;
     // 对所有i和j计算w(i,j)
-    for(int i = 1; i <= theRows; i ++)
+    for(int i = 0; i < theRows; i ++)
     {// 计算结果矩阵的第i行
-        T sum = element[ct] * m.element[cm];
-
-        for (int k = 2; k <= theColumns; k ++)
+        for(int j = 0; j < m.theColumns; j ++)
         {
-            ct++;                            // *this中第i行的下一项
-            cm += m.theColumns;              // m中第j列的下一项
-            sum += element[ct] * m.element[cm];
+            T sum = element[ct] * m.element[cm];     // 先把第一个数字乘起来存进去
+
+            // 累加其余所有项
+            for (int k = 1; k < theColumns; k ++)   // 然后从第二个数字开始
+            {
+                ct++;                               // *this中第i行的下一项
+                cm += m.theColumns;                 // m中第j列的下一项
+                sum += element[ct] * m.element[cm];
+            }
+            w.element[cw++] = sum;                  // cw 一直按顺序走就行了
+            // 从第一个矩阵行的起点和第二个矩阵下一列从新开始
+            ct -= theColumns - 1;
+            cm = j+1;
         }
-        w.element[cw++] = sum;
-        // 从行的起点的下一列从新开始
-        ct -= theColumns - 1;
+        ct = (i+1) * theColumns;
         cm = 0;
     }
     return w;
@@ -173,6 +169,8 @@ private:
     int rows;
     int cols;
 };
+
+
 
 
 

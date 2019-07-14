@@ -39,13 +39,14 @@ void test_abstract_factory()
     }
 }
 
+// 生成者
 void test_generate()
 {
     Burger* burger = Burger::BurgerBuilder(14).AddPepperoni().AddLettuce().AddTomato().Build();
     burger->showFlavors();
 }
 
-
+// 适配器
 void test_adapter()
 {
     WildDog dog;
@@ -55,3 +56,37 @@ void test_adapter()
     hunter.Hunt(dogAdapter);
 }
 
+// 观察者 定义对象间的依赖关系, 以至于一个对象的状态改变, 依赖它的对象们都会收到通知.
+void test_observer()
+{
+    JobSeeker johnDoe("John Doe");
+    JobSeeker janeDoe("Jane Doe");
+
+    JobPostings jobPostings;
+    jobPostings.Attach(johnDoe);
+    jobPostings.Attach(janeDoe);
+
+    jobPostings.AddJob(JobPost("Software Engineer"));
+}
+
+// 访问者 访问者模式允许你为对象们增加更多的操作, 却不必修改它们.
+void test_visitor()
+{
+    Monkey monkey;
+    Lion lion;
+    Dolphin dolphin;
+
+    Speak speak;
+    monkey.Accept(speak);
+    lion.Accept(speak);
+    dolphin.Accept(speak);
+}
+
+void test_singleton()
+{
+    // 因为构造函数 =delete了 所以只能用引用的形式
+    const President& president1 = President::GetInstance();
+    const President& president2 = President::GetInstance();
+
+    assert(&president1 == &president2); // same address, point to same object.
+}
