@@ -3,9 +3,11 @@
 //
 
 #include <vector>
+#include <string>
 #include "test_concepts.h"
 #include "../DataStructure/linearlist.h"
 #include "../DataStructure/matrix.h"
+#include "../Concepts/smartPtr.h"
 
 int test_add(int a, int b)
 {
@@ -41,6 +43,7 @@ void make2Darray(T ** &x, int row, int col)
 
 // 只有指向动态分配的对象的指针才能交给 shared_ptr 对象托管。将指向普通局部变量、全局变量的指针交给 shared_ptr 托管，
 // 编译时不会有问题，但程序运行时会出错，因为不能析构一个并没有指向动态分配的内存空间的指针。
+// https://blog.csdn.net/qq_34992845/article/details/69218843
 void test_shared_ptr()
 {
     shared_ptr<A> sp1(new A(2));  //A(2)由sp1托管，
@@ -135,4 +138,51 @@ void test_matrix_mul()
     for (int i = 0; i < result.size(); i ++)
         cout << result.data()[i];
 
+}
+
+void test_string()
+{
+    string s1;
+    string s2(s1);
+    string s3("Value");   // 执行直接初始化函数
+    string s4 = "Value";
+    string s5(5,'c');     // 类vector
+    if(s5.empty() || s5.size() < 5)
+        s5 += s4;
+
+    s5.erase(s5.end()-1);  // 去除s5最后一个字符
+
+}
+
+void test_new_and_malloc()
+{
+    char* temp1 = new char[100];
+    // 要注意malloc返回的是 void* 类型
+    char* temp2 = (char*)malloc(sizeof(char) * 100);
+
+    delete [] temp1;
+    free(temp2);
+}
+
+void TestSharpedPtr()
+{
+    SharpedPtr<int> ap1(new int(10));
+    SharpedPtr<int> ap2(new int(20));
+    SharpedPtr<int> ap3(ap1);
+    SharpedPtr<int> ap4;
+    ap4 = ap1;
+    *ap1 = 1;
+    *ap2 = 2;
+    *ap3 = 3;
+    *ap4 = 4;
+}
+
+void test_array_name()
+{
+    int text[5] = {1,2,3,4,5};
+    cout << *text << endl;                  // 输出1
+    cout << *(text+1) << endl;              // 输出2
+    cout << text << endl;                   // 0x7ffee4ffba30
+    cout << text+1 << endl;                 // 0x7ffee4ffba34  一个int是4位
+    cout << &text+1 << endl;                // 0x7ffee4ffba44  16进制 0x14 --> 十进制的4*5=20
 }

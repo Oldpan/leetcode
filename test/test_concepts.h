@@ -19,6 +19,7 @@ public:
 int test_throw();
 void test_shared_ptr();
 void test_max_heap();
+void TestSharpedPtr();
 
 
 
