@@ -75,7 +75,7 @@ void test_visitor()
     Monkey monkey;
     Lion lion;
     Dolphin dolphin;
-
+    // 相当于以同样的接口 调用不同动物的行为
     Speak speak;
     monkey.Accept(speak);
     lion.Accept(speak);

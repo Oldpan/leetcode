@@ -46,18 +46,22 @@ void NearestInsert(cv::Mat& input, cv::Mat& result, int Width)
     cv::waitKey(0);
 }
 
-void BilinearInterpolation(cv::Mat& src, cv::Mat& dst)
+void BilinearInterpolation()
 {
+    cv::Mat src = cv::imread("/Users/oldpan/Documents/Kaggle/leetcode/dataset/image/88.jpg");
+    // 这种是align_corners = false 的情况
+
     CV_Assert(src.data!=NULL);
     int srcRows = src.rows;
     int srcCols = src.cols;
     //定义目标函数
-    dst = cv::Mat::zeros(150,150,src.type());
+    cv::Mat  dst = cv::Mat::zeros(1000,1000,src.type());
     int dstRows = dst.rows;
     int dstCols = dst.cols;
     //缩放因子
-    double sx = src.cols / dst.cols;
-    double sy = src.rows / dst.rows;
+    double sx = double(src.cols) / double(dst.cols);
+    double sy = double(src.rows) / double(dst.rows);
+    // 从行开始
     for (int i = 0; i < dst.rows; i++)
     {
         //求目标图像的像素对应原图像的坐标，为了使得目标图像中心与原图像中心对齐，使用下面的公式
@@ -67,7 +71,7 @@ void BilinearInterpolation(cv::Mat& src, cv::Mat& dst)
             index_i = 0;
         if (index_i > src.rows - 1)
             index_i = src.rows - 1;
-        int i1 = cvFloor(index_i);//向下取整
+        int i1 = cvFloor(index_i);  //向下取整 得到所求这个点的四个周围的像素点坐标(后同)
         int i2 = cvCeil(index_i);
         double v = index_i - i1;
         for (int j = 0; j < dst.cols; j++)
@@ -79,7 +83,7 @@ void BilinearInterpolation(cv::Mat& src, cv::Mat& dst)
                 index_j = src.cols - 1;
             int j1 = cvFloor(index_j);
             int j2 = cvCeil(index_j);
-            double u = index_j - j1;
+            double u = index_j - j1;  // 其中v和u代表一个虚拟的坐标(如0.75，0.75) 作为四个坐标的权重(离哪个近权重就大)
             if (src.channels() == 1)
                 dst.at<uchar>(i, j) = cvFloor((1 - u)*(1 - v)*src.at<uchar>(i1, j1) + (1 - u)*v*src.at<uchar>(i2, j1) + u*(1 - v)*src.at<uchar>(i1, j2) + u*v*src.at<uchar>(i2, j2));
             else

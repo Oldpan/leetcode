@@ -33,34 +33,7 @@ int unit_sold{0};
 //int* temp2 = &temp;
 
 
-/*-- for loop --*/
-//std::vector<int> v = {0, 1, 2, 3, 4, 5};
-//void for_loop_test()
-//{
-//    for (const int& i : v) // access by const reference
-//        std::cout << i << ' ';
-//
-//    for (auto i : v) // access by value, the type of i is int
-//        std::cout << i << ' ';
-//
-//    for (auto&& i : v) // access by forwarding reference, the type of i is int&
-//        std::cout << i << ' ';
-//
-//    const auto& cv = v;
-//
-//    for (auto&& i : cv) // access by f-d reference, the type of i is const int&
-//        std::cout << i << ' ';
-//
-//    for (int n : {0, 1, 2, 3, 4, 5}) // the initializer may be a braced-init-list
-//        std::cout << n << ' ';
-//
-//    int a[] = {0, 1, 2, 3, 4, 5};
-//    for (int n : a) // the initializer may be an array
-//        std::cout << n << ' ';
-//
-//    for (int n : a)
-//        std::cout << 1 << ' '; // the loop variable need not be used
-//}
+
 
 
 /*-- const-, volatile-, and ref-qualified member functions --*/
@@ -132,6 +105,15 @@ int unit_sold{0};
 // 异常既然是一份数据，那么就应该有数据类型。C++ 规定，异常类型可以是 int、char、float、bool 等基本类型，
 // 也可以是指针、数组、字符串、结构体、类等聚合类型。C++ 语言本身以及标准库中的函数抛出的异常，
 // 都是 exception 类或其子类的异常。也就是说，抛出异常时，会创建一个 exception 类或其子类的对象。
+
+
+//char* my_strcpy(char *strDest, const char* strSrc)
+//{
+//
+//
+//
+//
+//}
 
 
 

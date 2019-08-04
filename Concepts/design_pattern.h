@@ -279,24 +279,24 @@ protected:
 
 class JobPostings : public IObservable {
 public:
-    void Attach(IObserver& observer) override {
+    void Attach(IObserver& observer) override {  // 这里注入信息
         observers_.push_back(observer);
     }
-    void AddJob(const JobPost &jobPosting) override {
+    void AddJob(const JobPost &jobPosting) override {  // 发布就会有回调
         Notify(jobPosting);
     }
 private:
     void Notify(const JobPost &jobPosting) override {
         for (IObserver& observer : observers_)
-            observer.OnJobPosted(jobPosting);
+            observer.OnJobPosted(jobPosting);   // 回调到对象的函数中
     }
 
     std::vector<std::reference_wrapper<IObserver>> observers_;
 };
 
 
-/*--------------------------观察者----------------------------*/
-
+/*-----------------------------访问者---------------------------------*/
+// 访问者模式允许你为对象们增加更多的操作, 却不必修改它们.
 
 class AnimalOperation;
 

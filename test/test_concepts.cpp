@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <string>
+#include <queue>
 #include "test_concepts.h"
 #include "../DataStructure/linearlist.h"
 #include "../DataStructure/matrix.h"
@@ -182,7 +183,91 @@ void test_array_name()
     int text[5] = {1,2,3,4,5};
     cout << *text << endl;                  // 输出1
     cout << *(text+1) << endl;              // 输出2
+    cout << text[1] << endl;                // 与第一个相同
     cout << text << endl;                   // 0x7ffee4ffba30
     cout << text+1 << endl;                 // 0x7ffee4ffba34  一个int是4位
+    // 注意 只有在取它地址的时候 才会整个进行取整
     cout << &text+1 << endl;                // 0x7ffee4ffba44  16进制 0x14 --> 十进制的4*5=20
+}
+
+void test_vector()
+{
+    std::vector<int> v = {0, 1, 2, 3, 4, 5};
+
+    for (const int& i : v) // access by const reference
+        std::cout << i << ' ';
+
+    for (auto i : v) // access by value, the type of i is int
+        std::cout << i << ' ';
+
+    for (auto&& i : v) // access by forwarding reference, the type of i is int&
+        std::cout << i << ' ';
+
+    const auto& cv = v;
+
+    for (auto&& i : cv) // access by f-d reference, the type of i is const int&
+        std::cout << i << ' ';
+
+    for (int n : {0, 1, 2, 3, 4, 5}) // the initializer may be a braced-init-list
+        std::cout << n << ' ';
+
+    int a[] = {0, 1, 2, 3, 4, 5};
+    for (int n : a) // the initializer may be an array
+        std::cout << n << ' ';
+
+    for (int n : a)
+        std::cout << 1 << ' '; // the loop variable need not be used
+
+}
+
+void test_priority()
+{
+    vector<int> test = {2,4,8,3,7,5,6};
+    // 默认情况都是 less 也就是最大堆
+    priority_queue<int, vector<int>> max_heap;  // 默认是最大堆
+    for(int& i : test)
+        max_heap.push(i);
+    cout << max_heap.top() << endl;
+    max_heap.push(9);
+    cout << max_heap.top() << endl;
+    max_heap.push(1);
+    cout << max_heap.top() << endl;
+    max_heap.pop();
+    cout << max_heap.top() << endl;
+
+    priority_queue<int, vector<int>, greater<>> min_heap;   // 最小堆
+    for(int& i : test)
+        min_heap.push(i);
+    cout << min_heap.top() << endl;
+    min_heap.push(9);
+    cout << min_heap.top() << endl;
+    min_heap.push(1);
+    cout << min_heap.top() << endl;
+    min_heap.pop();
+    cout << min_heap.top() << endl;
+
+};
+
+void test_new_operater()
+{
+    // new可以被重载
+    Test *p = new Test;
+    delete p;
+    p = NULL;
+    Test *pArray = new Test[3];
+    delete[] pArray;
+    pArray = NULL;
+}
+
+// 测试派生类构造函数的顺序以及其他
+void test_construt_order()
+{
+//    Base* base = new Base();
+    Base* derive = new Derive();
+    derive->shout_warp();   // 还是derive的
+    delete derive;   // 这里只执行了base的析构函数
+    cout << "----------------" << endl;
+    Derive* derive2 = new Derive();
+    derive2->shout_warp();
+    delete derive2;   // 而这里base和derive的析构函数都执行了
 }

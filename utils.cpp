@@ -74,7 +74,7 @@ private:
 /*------------------排序集合-------------------*/
 
 // 归并排序
-
+// 这个就是简单的将两个数组进行合并
 static vector<int> my_merge(vector<int> left, vector<int> right)
 {
     vector<int> result;
@@ -115,10 +115,10 @@ vector<int> mergeSort(vector<int>& array, int begin, int end)
 // 调整数组中index位置的数组 使其满足最小根的性质
 void heap_insert(vector<int>& array, int index)
 {
-    while (array[index] > array[(index-1)/2])
+    while (array[index] > array[(index-1)/2])  // 当子树大于父子树则
     {
         my_swap(array[index], array[(index-1)/2]);
-        index = (index - 1)/2;
+        index = (index - 1)/2;  // 切换到 父子树
     }
 }
 
@@ -191,6 +191,14 @@ void my_swap(int& a, int& b)
     temp = a^b;
     a = temp^a;
     b = temp^b;
+}
+
+// 用加法完成交换的功能
+void my_swap_with_add(int& a, int& b)
+{
+    a = a + b;
+    b = a - b;
+    a = a - b;
 }
 
 /*-----模仿迭代器-----*/
