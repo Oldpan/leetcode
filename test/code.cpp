@@ -46,6 +46,126 @@ void backtrack_order(vector<int> &nums,vector<vector<int>> &res,int i){
 }
 
 
+// 01 连通域矩阵 求连通的1的个数 使用BFS而不是DFS(DFS容易栈溢出)
+// int test(vector<vector<char>>& maze) {
+//    if(maze.empty())
+//        return 0;
+//    int row = maze.size();
+//    int col = maze[0].size();
+//    int num_of_1 = 0;
+//
+//    for (int r = 0; r < row; ++r)
+//        for (int c = 0; c < row; ++c)
+//        {
+//            if (maze[r][c] == '1')
+//                ++ num_of_1;
+//
+//                maze[r][c] = '0';
+//
+//                queue<pair<int, int>> my_queue;
+//
+//                my_queue.push({r, c});
+//
+//                while (!my_queue.empty()) {
+//
+//                    auto rc = my_queue.front();
+//                    my_queue.pop();
+//                    int row = rc.first, col = rc.second;
+//                    if (row - 1 >= 0 && maze[row - 1][col] == '1') {
+//                        my_queue.push({row - 1, col});
+//                        maze[row - 1][col] = '0';
+//                    }
+//                    if (row + 1 < row && maze[row + 1][col] == '1') {
+//                        my_queue.push({row + 1, col});
+//                        maze[row + 1][col] = '0';
+//                    }
+//                    if (col - 1 >= 0 && maze[row][col - 1] == '1') {
+//                        my_queue.push({row, col - 1});
+//                        maze[row][col - 1] = '0';
+//                    }
+//                    if (col + 1 < col && maze[row][col + 1] == '1') {
+//                        my_queue.push({row, col + 1});
+//                        maze[row][col + 1] = '0';
+//                    }
+//                }
+//
+//            }
+//        }
+//}
+//
+
+
+// 最小公倍数
+//int min_sub(int num1, int num2)
+//{
+//    int x, y;
+//    x = num1;
+//    y = num2;
+//    while(num1 != num2) {           //循环条件为两数不相等
+//        if(num1 > num2)             //如果第一个数大于第二个数
+//            num1 = num1 - num2;     //两数相减
+//        else
+//            num2 = num2 - num1;
+//    }
+//
+//    return x*y/num1;
+//}
+
+
+
+// 360 笔试一面 https://blog.csdn.net/qq_41855420/article/details/92102066
+//    int N;
+//    int M;
+//    cin >> N;
+//    cin >> M;
+//    vector<vector<int>> blocks(N, vector<int>(M,0));
+//    for(int i = 0; i < N; i ++)
+//        for(int j = 0; j < M; j ++)
+//        {
+//            int temp;
+//            cin >> temp;
+//            blocks[i][j] = temp;
+//        }
+//
+//    int res = 0;
+//    for (int row = 0; row < N; row ++)
+//        for (int col = 0; col < M; col ++){
+//            if (blocks[row][col]) {
+//
+//                res += 2;
+//
+//                if (row > 0) {
+//                    if (blocks[row][col] > blocks[row - 1][col])
+//                        res += blocks[row][col] - blocks[row - 1][col];
+//                } else
+//                    res += blocks[row][col];
+//                if (col > 0) {
+//                    if (blocks[row][col] > blocks[row][col - 1])
+//                        res += blocks[row][col] - blocks[row][col - 1];
+//                } else
+//                    res += blocks[row][col];
+//                if (row + 1 < N)
+//                {
+//                    if (blocks[row][col] > blocks[row + 1][col]) {
+//                        res += blocks[row][col] - blocks[row + 1][col];
+//                    }
+//                }
+//                else {
+//                    res += blocks[row][col];
+//                }
+//                if (col + 1 < M){
+//                    if (blocks[row][col] > blocks[row][col + 1]){
+//                        res += blocks[row][col] - blocks[row][col + 1];
+//                    }
+//                }
+//                else {
+//                    res += blocks[row][col];
+//                }
+//            }
+//        }
+//
+//    cout << res;
+
 
 
 // 华为笔试第三题 逻辑计算 和 加减乘除类似
@@ -120,6 +240,7 @@ int dfs_normal(string &s, int start_index, int end_index) {
         return first;
     return first|second;
 }
+
 // 这样调用
 //string s;
 //cin >> s;
@@ -205,7 +326,6 @@ int dfs_normal(string &s, int start_index, int end_index) {
 //
 //    out.erase(out.end()-1);
 //    cout << out;
-
 
 
 // 不定长数组输入 回车结束

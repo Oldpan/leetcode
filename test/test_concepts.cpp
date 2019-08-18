@@ -197,11 +197,17 @@ void test_vector()
     for (const int& i : v) // access by const reference
         std::cout << i << ' ';
 
+    v.pop_back();
+
     for (auto i : v) // access by value, the type of i is int
         std::cout << i << ' ';
 
+    v.erase(v.end()-1); // 也可以范围 v.erase(v.begin()+1, v.end()-1);
+
     for (auto&& i : v) // access by forwarding reference, the type of i is int&
         std::cout << i << ' ';
+
+    v.insert(v.begin()+1, 2,200);
 
     const auto& cv = v;
 

@@ -102,6 +102,7 @@ void test_shared_ptr();
 void test_max_heap();
 void TestSharpedPtr();
 void test_new_operater();
+void test_vector();
 
 
 
