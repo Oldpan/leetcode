@@ -362,9 +362,9 @@ int dfs_normal(string &s, int start_index, int end_index) {
 //{
 //if(i % (2*t1) < t1 && i % (2*t2) < t2)
 //curr_m = min(m, max(0, curr_m + m1 - m2));
-//if(i % (2*t1) < t1 and i % (2*t2) >= t2)
+//if(i % (2*t1) < t1 && i % (2*t2) >= t2)
 //curr_m = min(m, curr_m + m1);
-//if(i % (2*t1) >= t1 and i % (2*t2) < t2)
+//if(i % (2*t1) >= t1 && i % (2*t2) < t2)
 //curr_m = max(0, curr_m - m2);
 //}
 //

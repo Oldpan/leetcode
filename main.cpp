@@ -129,16 +129,137 @@ using namespace std;
 //    return x*y/num1;
 //}
 
+
+//函数功能: 计算Catalan的第n项
+//函数参数: n为项数
+//返回值:  第n个Catalan数
+
+int Catalan(int n)
+{
+    if(n<=1) return 1;
+    int *h = new int [n+1]; //保存临时结果
+    h[0] = h[1] = 1;        //h(0)和h(1)
+    for(int i=2;i<=n;++i)    //依次计算h(2),h(3)...h(n)
+    {
+        h[i] = 0;
+        for(int j = 0; j < i; j++) //根据递归式计算 h(i)= h(0)*h(i-1)+h(1)*h(i-2) + ... + h(i-1)h(0)
+            h[i] += (h[j] * h[i-1-j]);
+    }
+    int result = h[n]; //保存结果
+    delete [] h;       //注意释放空间
+    return result;
+}
+
+
 int main()
 {
 
+// 360 笔试一面 https://blog.csdn.net/qq_41855420/article/details/92102066
+//    int N;
+//    int M;
+//    cin >> N;
+//    cin >> M;
+//    vector<vector<int>> blocks(N, vector<int>(M,0));
+//    for(int i = 0; i < N; i ++)
+//        for(int j = 0; j < M; j ++)
+//        {
+//            int temp;
+//            cin >> temp;
+//            blocks[i][j] = temp;
+//        }
+//
+//    int res = 0;
+//    for (int row = 0; row < N; row ++)
+//        for (int col = 0; col < M; col ++){
+//            if (blocks[row][col]) {
+//
+//                res += 2;
+//
+//                if (row > 0) {
+//                    if (blocks[row][col] > blocks[row - 1][col])
+//                        res += blocks[row][col] - blocks[row - 1][col];
+//                } else
+//                    res += blocks[row][col];
+//                if (col > 0) {
+//                    if (blocks[row][col] > blocks[row][col - 1])
+//                        res += blocks[row][col] - blocks[row][col - 1];
+//                } else
+//                    res += blocks[row][col];
+//                if (row + 1 < N)
+//                {
+//                    if (blocks[row][col] > blocks[row + 1][col]) {
+//                        res += blocks[row][col] - blocks[row + 1][col];
+//                    }
+//                }
+//                else {
+//                    res += blocks[row][col];
+//                }
+//                if (col + 1 < M){
+//                    if (blocks[row][col] > blocks[row][col + 1]){
+//                        res += blocks[row][col] - blocks[row][col + 1];
+//                    }
+//                }
+//                else {
+//                    res += blocks[row][col];
+//                }
+//            }
+//        }
+//
+//    cout << res;
 
 
+    int n,m;
+    cin >> n;
+    cin >> m;
+    vector<int> first;
+    vector<int> second;
+    vector<int> index_num_1(m,0);
+    vector<int> index_num_2(m,0);
+    int temp;
+    for(int i = 0; i < n; i ++)
+    {
+        cin >> temp;
+        first.push_back(temp);
+        index_num_1[temp] ++;
+    }
+    for(int i = 0; i < n; i ++)
+    {
+        cin >> temp;
+        second.push_back(temp);
+        index_num_2[temp] ++;
+    }
 
+    vector<int> res(n, 0);
+    int count = 0;
 
+    for(int sub_num = 0; sub_num <= m; sub_num ++)
+    {
+        for(int i = m-sub_num-1; i >= 0; i --)
+        {
 
+            if(index_num_1[i] > 0 && index_num_2[m-1-i-sub_num] > 0)
+            {
+                res[count++] = m-1;
+                index_num_1[i] --;
+                index_num_2[m-1-i-sub_num] --;
+            }
 
+            for(int tt = m-1; tt >=0; tt --)
+                for(int j = m-1; j >= 0; j--)
+                {
+                    if(index_num_1[tt] > 0 && index_num_2[j] > 0 && (tt+j) % m == i)
+                    {
+                        res[count++] = m-1;
+                        index_num_1[tt] --;
+                        index_num_2[j] --;
+                    }
+                }
+        }
 
+    }
+
+    for(int i = 0; i < n; i ++)
+        cout << res[i] << ' ' ;
     return 0;
 
 
