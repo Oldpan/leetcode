@@ -67,11 +67,39 @@ int Catalan(int n)
 }
 
 
+enum Status
+{
+    UNKNOWN = 0,
+    BAD,
+    GOOD
+};
+
+bool canJump(vector<int>& nums) {
+
+    auto len = nums.size();
+
+    vector<Status> status(len, Status::UNKNOWN);
+    status[len-1] = Status::GOOD;
+    for(int i = len-2; i >= 0; i --)
+    {
+        int furthest_len = min(i + nums[i], int(len - 1));
+        for(int j = i + 1; j <= furthest_len; j ++)
+        {
+            if(status[j] == Status::GOOD)
+            {
+                status[i] = Status::GOOD;
+                break;
+            }
+        }
+    }
+    return status[0] == Status::GOOD;
+}
+
 int main()
 {
 
-    vector<int> test = {4, 3, 2, 3, 5, 2, 1};
-    canPartitionKSubsets(test, 4);
+    vector<int> test = {3,2,1,0,4};
+    canJump(test);
 
 //    int nums = 10;
 //    int len = 3;
