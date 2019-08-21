@@ -101,6 +101,7 @@ int main()
     vector<int> test = {3,2,1,0,4};
     canJump(test);
 
+
 //    int nums = 10;
 //    int len = 3;
 //    float sub_value = float(nums) / len;
