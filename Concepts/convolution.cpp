@@ -250,7 +250,7 @@ static void CompareTwoMatrix(const cv::Mat& m1, const cv::Mat& m2, cv::Mat& dst,
         {
             float v1 = m1.at<float>(y, x);
             float v2 = m2.at<float>(y, x);
-            if (std::fabsf(v1 - v2) > eps)
+            if (std::fabs(v1 - v2) > eps)
             {
                 dst.at<uchar>(y, x) = 255;
             }

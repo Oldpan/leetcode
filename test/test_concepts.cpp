@@ -5,10 +5,13 @@
 #include <vector>
 #include <string>
 #include <queue>
+#include <memory>
 #include "test_concepts.h"
 #include "../DataStructure/linearlist.h"
 #include "../DataStructure/matrix.h"
 #include "../Concepts/smartPtr.h"
+
+using namespace std;
 
 int test_add(int a, int b)
 {
@@ -241,7 +244,7 @@ void test_priority()
     max_heap.pop();
     cout << max_heap.top() << endl;
 
-    priority_queue<int, vector<int>, greater<>> min_heap;   // 最小堆
+    priority_queue<int, vector<int>, greater<int> > min_heap;   // 最小堆
     for(int& i : test)
         min_heap.push(i);
     cout << min_heap.top() << endl;

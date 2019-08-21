@@ -1,6 +1,7 @@
 #include "test_design_pattern.h"
 #include "../Concepts/design_pattern.h"
 #include <iostream>
+#include <cassert>
 
 //void test_simple_factory()
 //{

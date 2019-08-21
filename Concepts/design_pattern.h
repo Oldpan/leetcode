@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <vector>
+#include <functional>
 
 // 关于这些代码的讲解网站:https://segmentfault.com/a/1190000010706695
 
@@ -291,7 +292,7 @@ private:
             observer.OnJobPosted(jobPosting);   // 回调到对象的函数中
     }
 
-    std::vector<std::reference_wrapper<IObserver>> observers_;
+    std::vector<std::reference_wrapper<IObserver> > observers_;
 };
 
 
