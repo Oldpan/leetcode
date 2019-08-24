@@ -253,6 +253,16 @@ int partition(vector<int>& data, int start, int end)
     return small;
 }
 
+void quick_sort(vector<int>& nums, int begin, int end)
+{
+    if(begin == end)
+        return ;
+    int index = partition(nums, begin, end);
+    if(index < end)
+        quick_sort(nums, begin, index - 1);
+    if(index > begin)
+        quick_sort(nums, index + 1, end);
+}
 
 /*-------------------------------Set与Multiset----------------------------------*/
 
@@ -374,6 +384,7 @@ void multiset_example()
     cout << endl;
 
 }
+
 
 
 

@@ -281,7 +281,7 @@ protected:
 class JobPostings : public IObservable {
 public:
     void Attach(IObserver& observer) override {  // 这里注入信息
-        observers_.push_back(observer);
+        observers_.emplace_back(observer);
     }
     void AddJob(const JobPost &jobPosting) override {  // 发布就会有回调
         Notify(jobPosting);
@@ -292,7 +292,7 @@ private:
             observer.OnJobPosted(jobPosting);   // 回调到对象的函数中
     }
 
-    std::vector<std::reference_wrapper<IObserver> > observers_;
+    std::vector<std::reference_wrapper<IObserver> > observers_;  // 这个好像是因为vector中不支持元素是引用
 };
 
 

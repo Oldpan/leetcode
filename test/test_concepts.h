@@ -94,6 +94,23 @@ public:
     }
 };
 
+// 用于测试new与malloc的区别
+class TEST
+{
+private:
+    int num1;
+    int num2;
+public:
+    TEST()
+    {
+        num1 = 10;
+        num2 = 20;
+    }
+    void Print()
+    {
+        std::cout << num1 << " " << num2 << std::endl;
+    }
+};
 
 
 void test_construt_order();
@@ -102,6 +119,7 @@ void test_shared_ptr();
 void test_max_heap();
 void TestSharpedPtr();
 void test_new_operater();
+void test_new_and_mal();
 void test_vector();
 
 

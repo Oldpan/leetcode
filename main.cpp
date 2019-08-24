@@ -11,7 +11,7 @@
 #include "test/test_concepts.h"
 //#include "test/test_thread.h"
 ////#include "test/test_design_pattern.h"
-//#include "utils.h"
+#include "utils.h"
 //#include "Concepts/learnOpencv.h"
 
 using namespace std;
@@ -46,60 +46,23 @@ using namespace std;
 
 
 
-//函数功能: 计算Catalan的第n项
-//函数参数: n为项数
-//返回值:  第n个Catalan数
 
-int Catalan(int n)
-{
-    if(n<=1) return 1;
-    int *h = new int [n+1]; //保存临时结果
-    h[0] = h[1] = 1;        //h(0)和h(1)
-    for(int i=2;i<=n;++i)    //依次计算h(2),h(3)...h(n)
-    {
-        h[i] = 0;
-        for(int j = 0; j < i; j++) //根据递归式计算 h(i)= h(0)*h(i-1)+h(1)*h(i-2) + ... + h(i-1)h(0)
-            h[i] += (h[j] * h[i-1-j]);
-    }
-    int result = h[n]; //保存结果
-    delete [] h;       //注意释放空间
-    return result;
-}
-
-
-enum Status
-{
-    UNKNOWN = 0,
-    BAD,
-    GOOD
-};
-
-bool canJump(vector<int>& nums) {
-
-    auto len = nums.size();
-
-    vector<Status> status(len, Status::UNKNOWN);
-    status[len-1] = Status::GOOD;
-    for(int i = len-2; i >= 0; i --)
-    {
-        int furthest_len = min(i + nums[i], int(len - 1));
-        for(int j = i + 1; j <= furthest_len; j ++)
-        {
-            if(status[j] == Status::GOOD)
-            {
-                status[i] = Status::GOOD;
-                break;
-            }
-        }
-    }
-    return status[0] == Status::GOOD;
-}
 
 int main()
 {
 
-    vector<int> test = {3,2,1,0,4};
-    canJump(test);
+    vector<int> test = {6,-3,-2,7,-15,1,2,2};
+
+
+
+
+
+
+
+
+
+
+
 
 
 //    int nums = 10;

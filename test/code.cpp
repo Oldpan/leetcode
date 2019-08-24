@@ -45,6 +45,68 @@ void backtrack_order(vector<int> &nums,vector<vector<int>> &res,int i){
     }
 }
 
+// 最长子数组的最大和 一维dp即可
+int FindGreatestSumOfSubArray(vector<int> array) {
+
+    auto len = array.size();
+    if(len < 2)
+        return array[0];
+
+    int max_len = -10000;
+    vector<int> dp(len, 0);
+    dp[0] = array[0];
+    for(int i = 1; i < len; i++)
+    {
+        dp[i] = max(array[i], array[i] + dp[i-1]);
+        max_len = max(max_len, dp[i]);
+    }
+
+    return max_len;
+}
+
+// 美团第一题比较函数 比较两个字符串
+// 规则 从第一个字符开始比较 在后面的字母比在前面的字母大
+// 如果两个字符串的前缀一样 那么短的在前面
+bool cmp(string& s1, string& s2)
+{
+    if(s1.empty())
+        return true;
+    if(s2.empty())
+        return false;
+    int min_len = min(s1.size(), s2.size());
+    for(int i = 0; i < min_len; i ++)
+    {
+        if(s1[i] > s2[i])
+            return true;
+        else
+            if(s1[i] < s2[i])
+                return false;
+    }
+    return s1.size() <= s2.size();
+}
+
+//函数功能: 计算Catalan的第n项
+//函数参数: n为项数
+//返回值:  第n个Catalan数
+
+int Catalan(int n)
+{
+    if(n<=1) return 1;
+    int *h = new int [n+1]; //保存临时结果
+    h[0] = h[1] = 1;        //h(0)和h(1)
+    for(int i=2;i<=n;++i)    //依次计算h(2),h(3)...h(n)
+    {
+        h[i] = 0;
+        for(int j = 0; j < i; j++) //根据递归式计算 h(i)= h(0)*h(i-1)+h(1)*h(i-2) + ... + h(i-1)h(0)
+            h[i] += (h[j] * h[i-1-j]);
+    }
+    int result = h[n]; //保存结果
+    delete [] h;       //注意释放空间
+    return result;
+}
+
+
+
 
 // 01 连通域矩阵 求连通的1的个数 使用BFS而不是DFS(DFS容易栈溢出)
 // int test(vector<vector<char>>& maze) {

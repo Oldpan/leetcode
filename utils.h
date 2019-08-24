@@ -19,6 +19,7 @@ using namespace std;
 char* number2char(int n);
 void my_swap(int& a, int& b);
 int partition(vector<int>& data, int start, int end);
+void quick_sort(vector<int>& nums, int begin, int end);
 void set_example();
 void multiset_example();
 bool IsBig_Endian();
