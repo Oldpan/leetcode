@@ -185,6 +185,7 @@ int dfs_kh(int &index, string &s) {
         }
     }
 }
+
 int dfs_normal(string &s, int start_index, int end_index) {
     int first;
     int second=-1;
@@ -245,6 +246,127 @@ int dfs_normal(string &s, int start_index, int end_index) {
 //string s;
 //cin >> s;
 //cout << dfs_normal(s, 0, s.size());
+
+
+// 美团第一题 字符串特定规则排序
+#define random(s,e) (rand()%e+s)
+
+bool my_cam(string& a, string& b)
+{
+    if(a.empty())  // ''空的字符串排前面
+        return true;
+    if(b.empty())
+        return false;
+
+    auto len1 = a.size();
+    auto len2 = b.size();
+    auto len = len1 < len2 ? len1 : len2;
+
+    for(int i = 0; i < len; i ++)
+    {
+        if(a[i] > b[i])
+            return true;
+        if(a[i] < b[i])
+            return false;
+    }
+    return len1 < len2;
+}
+
+int my_partition(vector<string>& data, int start, int end)
+{
+    auto length = data.size();
+    if(data.empty() || start < 0 || end >= length)
+        return -1;
+
+//    int index = random(start, end);  这个随机函数有问题
+    int index = start;
+    swap(data[index], data[end]);
+
+    int small = start - 1;
+    for(index = start; index < end; index ++)
+    {
+        if(my_cam(data[index], data[end]))  // 逆序
+        {
+            ++ small;
+            if(small != index)
+                swap(data[index], data[small]);
+        }
+    }
+    ++ small;
+    swap(data[small], data[end]);
+
+    return small;
+}
+
+void my_quick_sort(vector<string>& strlist, int begin, int end)
+{
+    if(begin == end)
+        return;
+    int index = my_partition(strlist, begin, end);
+    if(index == -1)
+        return;
+    if(index > begin)
+        my_quick_sort(strlist, begin, index-1);
+    if(index < end)
+        my_quick_sort(strlist, index + 1, end);
+}
+// 输入部分
+//vector<string> test;
+//vector<string> empty_str;
+//
+//string s;
+//getline(cin, s);
+//string temp;
+//for(int i = 0; i < s.size(); i ++)
+//{
+//if(s[i] != ',')
+//temp += s[i];
+//else
+//{
+//if(temp.empty())
+//{
+//empty_str.push_back(temp);
+//continue;
+//}
+//test.push_back(temp);
+//temp = "";
+//}
+//}
+//test.push_back(temp);
+//
+////    sort(test.begin(), test.end(), my_cam);
+//my_quick_sort(test, 0, test.size()-1);
+//string out;
+//
+//if(!empty_str.empty() || !test.empty())
+//{
+//while(!empty_str.empty())
+//{
+//out += empty_str.back();
+//empty_str.pop_back();
+//out += ",";
+//}
+//for(int i = 0; i < test.size(); i ++)
+//{
+//out += test[i];
+//out += ",";
+//}
+//}
+//out.erase(out.end()-1);
+//cout << out;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

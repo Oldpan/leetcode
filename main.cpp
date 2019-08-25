@@ -95,11 +95,23 @@ bool canJump(vector<int>& nums) {
     return status[0] == Status::GOOD;
 }
 
+
 int main()
 {
 
-    vector<int> test = {3,2,1,0,4};
-    canJump(test);
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //    int nums = 10;
