@@ -286,9 +286,11 @@ void test_construt_order()
 //    Base* base = new Base();
     Base* derive = new Derive();
     derive->shout_warp();   // 还是derive的
-    delete derive;   // 这里只执行了base的析构函数
+    delete derive;   // 这里只执行了base的析构函数 而没有执行derive的析构函数　导致内存泄露
+    // 解决方法是将base的析构函数定义为虚函数
     cout << "----------------" << endl;
     Derive* derive2 = new Derive();
     derive2->shout_warp();
-    delete derive2;   // 而这里base和derive的析构函数都执行了
+    delete derive2;   // 而这里base和derive的析构函数都执行了 先derive后base
 }
+

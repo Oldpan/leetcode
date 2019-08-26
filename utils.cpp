@@ -170,7 +170,6 @@ bool IsBig_Endian()
 
 // atoi 字符串变数字  leetcode中有原题
 
-
 /*-------------------------------数字变字符串----------------------------------*/
 // 使用 to_string函数 也可以实现 数字变string
 char* number2char(int n)
@@ -385,7 +384,58 @@ void multiset_example()
 
 }
 
-
+/*-----------------------------并查集-----------------------------------*/
+//int pre[200]; //存放第i个元素的父节点
+//
+//int unionsearch(int root) //查找根结点
+//{
+//    int son, tmp;
+//    son = root;
+//    while(root != pre[root]) //寻找根结点
+//        root = pre[root];
+//    while(son != root)   //路径压缩
+//    {
+//        tmp = pre[son];
+//        pre[son] = root;
+//        son = tmp;
+//    }
+//    return root;
+//}
+//
+//void join(int root1, int root2)  //判断是否连通，不连通就合并
+//{
+//    int x, y;
+//    x = unionsearch(root1);
+//    y = unionsearch(root2);
+//    if(x != y)                  //如果不连通，就把它们所在的连通分支合并
+//        pre[x] = y;
+//}
+//
+//int findCircleNum(vector<vector<int>>& M)
+//{
+//    auto row = M.size();
+//    auto col = M[0].size();
+//    int res = 0;
+//    unordered_map<int, int> friends;
+//    for(int i = 0; i < 200; i ++)
+//        pre[i] = i;
+//
+//    for(int i = 0; i < row; i++)
+//        for(int j = 0; j < col; j ++)
+//        {
+//            if(M[i][j] == 1)
+//                join(i,j);
+//        }
+//
+//    for(int i = 0; i < row; i ++)
+//    {
+//        if(!friends.count(pre[i]))
+//            friends.insert({i,1});
+//    }
+//
+//    res = friends.size();
+//    return res;
+//}
 
 
 

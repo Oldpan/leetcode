@@ -62,7 +62,7 @@ public:	//new的重载
 class Base
 {
 public:
-    Base(){
+    Base(){ // 注意构造函数不能定义为虚函数
         cout << "Base construct!" << endl;
     }
     virtual void shout()

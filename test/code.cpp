@@ -45,6 +45,34 @@ void backtrack_order(vector<int> &nums,vector<vector<int>> &res,int i){
     }
 }
 
+
+// 字符串的排列　不知道为什么在牛客上会超时
+vector<string> Permutation(string str) {
+
+    vector<string> res;
+    auto len = str.size();
+
+    while(true)
+    {
+        int j,k;
+        res.push_back(str);
+
+        for(j = len - 2; j >= 0 && str[j] > str[j+1]; j --);
+
+        if(j < 0)
+            break;
+
+        for(k = len - 1; k > j && str[k] < str[j]; k --);
+
+        swap(str[k], str[j]);
+
+        for(int l = j + 1, r = len - 1; l < r; l ++, r --)
+            swap(str[l], str[r]);
+    }
+
+    return res;
+}
+
 // 最长子数组的最大和 一维dp即可
 int FindGreatestSumOfSubArray(vector<int> array) {
 
