@@ -193,6 +193,19 @@ void test_array_name()
     cout << &text+1 << endl;                // 0x7ffee4ffba44  16进制 0x14 --> 十进制的4*5=20
 }
 
+void test_lower_bound()
+{
+    vector<int> test = {1,2,3,4,5,6,7,8,9};
+    // 返回数值第一次出现的位置　大于或等于val的第一个元素位置
+    int low = lower_bound(test.begin(), test.end(), 5) - test.begin();
+    // 返回的是数值 最后一个 出现的位置 大于val的第一个元素位置
+    int high = upper_bound(test.begin(), test.end(), 5) - test.begin();
+    // 返回的是是否存在这么一个数，是一个bool值
+    bool is_exist = binary_search(test.begin(), test.end(), 4);
+    cout << low << endl;
+    cout << high << endl;
+}
+
 void test_vector()
 {
     std::vector<int> v = {0, 1, 2, 3, 4, 5};
@@ -224,6 +237,7 @@ void test_vector()
     for (int n : a) // the initializer may be an array
         std::cout << n << ' ';
 
+    fill(v.begin(), v.end(), 0); // fill the vector value to 0
     for (int n : a)
         std::cout << 1 << ' '; // the loop variable need not be used
 
@@ -254,7 +268,6 @@ void test_priority()
     cout << min_heap.top() << endl;
     min_heap.pop();
     cout << min_heap.top() << endl;
-
 };
 
 void test_new_operater()
@@ -293,4 +306,6 @@ void test_construt_order()
     derive2->shout_warp();
     delete derive2;   // 而这里base和derive的析构函数都执行了 先derive后base
 }
+
+
 

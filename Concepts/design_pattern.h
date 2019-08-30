@@ -205,6 +205,7 @@ private:
     Burger* burger_;
 };
 
+/*-------------------------适配器---------------------------*/
 class ILion {
 public:
     virtual void Roar() {
@@ -343,6 +344,137 @@ public:
     void visitLion(Lion& lion) override { lion.Roar(); }
     void visitDolphin(Dolphin& dolphin) override { dolphin.Speak(); }
 };
+
+/*----------------------------桥接器－－－－－－－－－－－－－－－－－－－－－－*/
+class ITheme {
+public:
+    virtual std::string GetColor() = 0;
+};
+
+class DarkTheme : public ITheme {
+public:
+    std::string GetColor() override { return "Dark Black"; }
+};
+
+class LightTheme : public ITheme {
+public:
+    std::string GetColor() override { return "Off white"; }
+};
+
+class AquaTheme : public ITheme {
+public:
+    std::string GetColor() override { return "Light blue"; }
+};
+
+class IWebPage {
+public:
+    IWebPage(ITheme& theme) : theme_(theme) {}
+    virtual std::string GetContent() = 0;
+protected:
+    ITheme& theme_;
+};
+
+class About : public IWebPage {
+public:
+    About(ITheme& theme) : IWebPage(theme) {}
+    std::string GetContent() override {
+        return "About page in " + theme_.GetColor();
+    }
+};
+
+class Careers : public IWebPage {
+public:
+    Careers(ITheme& theme) : IWebPage(theme) {}
+    std::string GetContent() override {
+        return "Careers page in " + theme_.GetColor();
+    }
+};
+
+
+/*---------------------------组成--------------------*/
+class Employee {
+public:
+    Employee(const std::string& name, float salary): name_(name), salary_(salary) {}
+    virtual std::string GetName() { return name_; }
+    virtual float GetSalary() { return salary_; }
+
+protected:
+    float salary_;
+    std::string name_;
+};
+
+class mDeveloper : public Employee {
+public:
+    mDeveloper(const std::string& name, float salary) : Employee(name, salary) {}
+};
+
+class Designer : public Employee {
+public:
+    Designer(const std::string& name, float salary) : Employee(name, salary) {}
+};
+
+class Organization {
+public:
+    void AddEmployee(const Employee& employee) {
+        employees_.push_back(employee);
+    }
+    float GetNetSalaries() {
+        float net_salary = 0;
+        for (auto&& employee : employees_) {
+            net_salary += employee.GetSalary();
+        }
+        return net_salary;
+    }
+
+private:
+    std::vector<Employee> employees_;
+};
+
+/*----------------------装饰器----------------------*/
+
+class ICoffee {
+public:
+    virtual float GetCost() = 0;
+    virtual std::string GetDescription() = 0;
+};
+
+class SimpleCoffee : public ICoffee {
+public:
+    float GetCost() override { return 10; }
+    std::string GetDescription() override { return "Simple coffee"; }
+};
+
+class CoffeePlus : public ICoffee {
+public:
+    CoffeePlus(ICoffee& coffee): coffee_(coffee) {}
+    virtual float GetCost() = 0;
+    virtual std::string GetDescription() = 0;
+protected:
+    ICoffee& coffee_;
+};
+
+class MilkCoffee : public CoffeePlus {
+public:
+    MilkCoffee(ICoffee& coffee): CoffeePlus(coffee) {}
+    float GetCost() override { return coffee_.GetCost() + 2; }
+    std::string GetDescription() override { return coffee_.GetDescription() + ", milk"; }
+};
+
+class WhipCoffee : public CoffeePlus {
+public:
+    WhipCoffee(ICoffee& coffee): CoffeePlus(coffee) {}
+    float GetCost() override { return coffee_.GetCost() + 5; }
+    std::string GetDescription() override { return coffee_.GetDescription() + ", whip"; }
+};
+
+class VanillaCoffee : public CoffeePlus {
+public:
+    VanillaCoffee(ICoffee& coffee): CoffeePlus(coffee) {}
+    float GetCost() override { return coffee_.GetCost() + 3; }
+    std::string GetDescription() override { return coffee_.GetDescription() + ", vanilla"; }
+};
+
+
 
 
 

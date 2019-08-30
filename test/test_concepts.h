@@ -121,6 +121,8 @@ void TestSharpedPtr();
 void test_new_operater();
 void test_new_and_mal();
 void test_vector();
+void test_lower_bound();
+void test_priority();
 
 
 

@@ -91,3 +91,49 @@ void test_singleton()
 
     assert(&president1 == &president2); // same address, point to same object.
 }
+
+void test_bridge()
+{
+    DarkTheme darkTheme;
+    About about(darkTheme);
+    Careers careers(darkTheme);
+
+    std::cout << about.GetContent() << std::endl;
+    std::cout << careers.GetContent() << std::endl;
+}
+
+// 组合模式在我看来甚至称不上什么模式, 其核心就是多态特性的体现.
+// 另一个核心在于, 容器存储的是接口类型, 利用多态, 可以迭代处理通用操作.
+void test_compisite()
+{
+    mDeveloper john("John Doe", 12000);
+    Designer jane("Jane Doe", 15000);
+
+    Organization org;
+    org.AddEmployee(john);
+    org.AddEmployee(jane);
+
+    std::cout << "Net salaries: " << org.GetNetSalaries() << std::endl;
+}
+
+// 装饰模式的形态很有意思, 像是静态语言的动态化. 其实实现上与组合模式类似, 但关键之处在于, 其依赖的对象是其父类接口.
+// 顾名思义, 装饰模式, 装饰的是对象自身, 且支持重复装饰. 譬如上述实例中, 完全可以加两遍牛奶. 但最终要保证接口的一致性,
+// 就像你的房子无论装饰成什么样子, 它依然只是你的房子.
+void test_decorator()
+{
+    ICoffee* someCoffee = new SimpleCoffee();
+    std::cout << someCoffee->GetCost() << std::endl;
+    std::cout << someCoffee->GetDescription() << std::endl;
+
+    someCoffee = new MilkCoffee(*someCoffee);
+    std::cout << someCoffee->GetCost() << std::endl;
+    std::cout << someCoffee->GetDescription() << std::endl;
+
+    someCoffee = new WhipCoffee(*someCoffee);
+    std::cout << someCoffee->GetCost() << std::endl;
+    std::cout << someCoffee->GetDescription() << std::endl;
+
+    someCoffee = new VanillaCoffee(*someCoffee);
+    std::cout << someCoffee->GetCost() << std::endl;
+    std::cout << someCoffee->GetDescription() << std::endl;
+}

@@ -9,3 +9,4 @@
 
 void test_observer();
 void test_singleton();
+void test_decorator();

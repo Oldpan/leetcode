@@ -5,12 +5,12 @@
 #include <sstream>
 #include <vector>
 #include <unordered_map>
-#include <ctype.h>
+#include <cctype>
 #include <stack>
 
 #include "test/test_concepts.h"
 //#include "test/test_thread.h"
-////#include "test/test_design_pattern.h"
+#include "test/test_design_pattern.h"
 #include "utils.h"
 //#include "Concepts/learnOpencv.h"
 
@@ -43,81 +43,9 @@ using namespace std;
 //}
 
 
-struct p
-{
-    int x;
-    int y;
-};
-
-
-int pre[200]; //存放第i个元素的父节点
-
-int unionsearch(int root) //查找根结点
-{
-    int son, tmp;
-    son = root;
-    while(root != pre[root])  //寻找根结点
-        root = pre[root];
-    while(son != root)   //路径压缩
-    {
-        tmp = pre[son];
-        pre[son] = root;
-        son = tmp;
-    }
-    return root;
-}
-
-void join(int root1, int root2)    // 判断是否连通，不连通就合并
-{
-    int x, y;
-    x = unionsearch(root1);
-    y = unionsearch(root2);
-    if(x != y)                     // 如果不连通，就把它们所在的连通分支合并
-        pre[x] = y;
-}
-
-int findCircleNum(vector<vector<int>>& M)
-{
-    auto row = M.size();
-    auto col = M[0].size();
-    int res = 0;
-
-    for(int i = 0; i < 200; i ++)
-        pre[i] = i;
-
-    for(int i = 0; i < row; i++)
-        for(int j = i+1; j < col; j ++)
-        {
-            if(M[i][j] == 1)
-                join(i,j);
-        }
-
-    for(int i = 0; i < row; i ++)
-    {
-        if(i == pre[i])
-            res ++;
-    }
-
-    return res;
-}
 
 int main()
 {
-    vector<vector<int>> test = {{1,0,0,1},{0,1,1,0},{0,1,1,1},{1,0,1,1}};
-    int res = findCircleNum(test);
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //    int nums = 10;
@@ -186,7 +114,7 @@ int main()
 
 
 
-    test_construt_order();
+//    test_construt_order();
 //     要记住，默认都是less
 //    vector<int> test = {2,4,8,3,7,5,6};
 //    sort(test.begin(), test.end(), greater<>());
