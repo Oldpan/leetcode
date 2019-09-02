@@ -2,6 +2,10 @@
 
 #include <iostream>
 #include <vector>
+#include <queue>
+#include <map>
+#include <algorithm>
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -45,8 +49,7 @@ void backtrack_order(vector<int> &nums,vector<vector<int>> &res,int i){
     }
 }
 
-
-// 字符串的排列　不知道为什么在牛客上会超时
+// 字符串的字典排列 不知道为什么在牛客上会超时
 vector<string> Permutation(string str) {
 
     vector<string> res;
@@ -73,16 +76,16 @@ vector<string> Permutation(string str) {
     return res;
 }
 
-// 最长子数组的最大和 一维dp即可
+// 最长子数组的最大和一维dp即可  leetcode 53　动态规划
 int FindGreatestSumOfSubArray(vector<int> array) {
 
     auto len = array.size();
     if(len < 2)
         return array[0];
 
-    int max_len = -10000;
     vector<int> dp(len, 0);
     dp[0] = array[0];
+    int max_len = dp[0];
     for(int i = 1; i < len; i++)
     {
         dp[i] = max(array[i], array[i] + dp[i-1]);
@@ -92,7 +95,32 @@ int FindGreatestSumOfSubArray(vector<int> array) {
     return max_len;
 }
 
-// 美团第一题比较函数 比较两个字符串
+
+//416. 分割等和子　转化为背包问题做 动态规划
+bool canPartition(vector<int>& nums)
+{
+    int sum = 0;
+    auto len = nums.size();
+    for(int i = 0; i < nums.size(); i ++)
+        sum += nums[i];
+    if(sum % 2 != 0 || len < 2)
+        return false;
+    int target = sum/2;
+
+    vector<vector<int>> dp(len+1, vector<int>(target+1, 0));
+    for(int i = 1; i <= len; i ++)
+        for(int j = 1; j <= target; j ++)
+        {
+            if(j >= nums[i-1])
+                dp[i][j] = max(dp[i-1][j], dp[i-1][j-nums[i-1]] + nums[i-1]);
+            else
+                dp[i][j] = dp[i-1][j];
+        }
+
+    return dp[len][target] == target;
+}
+
+// 美团第一题比较函数 比较两个字符串　学习字符串比较规则
 // 规则 从第一个字符开始比较 在后面的字母比在前面的字母大
 // 如果两个字符串的前缀一样 那么短的在前面
 bool cmp(string& s1, string& s2)
@@ -112,6 +140,65 @@ bool cmp(string& s1, string& s2)
     }
     return s1.size() <= s2.size();
 }
+
+// leetcode 164 给定一个无序的数组，找出数组在排序之后，相邻元素之间最大的差值。
+// 这个题是陌陌的现场笔试第一题
+// 设置n+1个桶是为了保证间距最大的两个数被分到不同的桶中
+// 因为最大间距 x >= (max_val - min_val) / (n-1)
+// 而使用n+1个桶每个桶中数的差值最大为 (max_val - min_val) / n 因此一个桶不可能同时存放间距最大的两个数
+typedef pair<int, int> min_and_max;
+
+int bucketNum(vector<int>& a, int i, int min, int max, int len)
+{
+    return long(a[i] - min) * len / (max - min);
+}
+
+int maximumGap(vector<int>& nums) {
+
+    auto len = nums.size();
+    if(len < 2)
+        return 0;
+    int max_value = 0;
+
+    for(auto& num:nums)
+        max_value = max(max_value,num);
+    int min_value = INT32_MAX;
+    for(auto& num:nums)
+        min_value = min(min_value, num);
+
+    vector<int> bucket_list(len + 1, 0);
+    vector<min_and_max> minmax(len + 1, min_and_max(0,0)); // 记录当前桶最小最大值
+    vector<bool> has_num(len + 1, false);  // 记录当前是否有数
+
+    for(int i = 0; i < len; i ++)
+    {
+        int bucketId = bucketNum(nums, i, min_value, max_value, len);
+        minmax[bucketId].first = has_num[bucketId] ? min(minmax[bucketId].first, nums[i]) : nums[i];
+        minmax[bucketId].second = has_num[bucketId] ? max(minmax[bucketId].second, nums[i]) : nums[i];
+        has_num[bucketId] = true;
+    }
+
+    int resMax = 0;  // 记录最大差值
+    int lastMax = 0; // 记录当前空桶的上一个桶的最大值
+
+    int i = 0;
+    while (i < len + 1){
+        //遍历桶，找到一个空桶
+        while (i < len + 1 && has_num[i])
+            i ++;
+        if(i == len + 1)
+            break;
+        lastMax = minmax[i-1].second;
+        //继续遍历桶，找到下一个非空桶
+        while(i < len + 1 && !has_num[i])
+            i ++;
+        if(i == len + 1)
+            break;
+        resMax = max(resMax, minmax[i].first - lastMax);
+    }
+    return resMax;
+}
+
 
 //函数功能: 计算Catalan的第n项
 //函数参数: n为项数
@@ -140,7 +227,7 @@ struct ListNode{
     ListNode(int x):val(x), next(nullptr){}
 };
 
-// 简单的翻转链表
+// 简单的翻转链表 inplace版的
 ListNode* ReverseList(ListNode* pHead)
 {
     ListNode* pCurr=pHead;
@@ -162,8 +249,7 @@ ListNode* ReverseList(ListNode* pHead)
 }
 
 
-
-// leetcode　朋友圈
+// leetcode　朋友圈 并查集
 int pre[200]; //存放第i个元素的父节点
 
 int unionsearch(int root) //查找根结点
@@ -216,71 +302,427 @@ int findCircleNum(vector<vector<int>>& M)
 }
 
 
-
-
 // 01 连通域矩阵 求连通的1的个数 使用BFS而不是DFS(DFS容易栈溢出)
-// int test(vector<vector<char>>& maze) {
-//    if(maze.empty())
-//        return 0;
-//    int row = maze.size();
-//    int col = maze[0].size();
-//    int num_of_1 = 0;
-//
-//    for (int r = 0; r < row; ++r)
-//        for (int c = 0; c < row; ++c)
-//        {
-//            if (maze[r][c] == '1')
-//                ++ num_of_1;
-//
-//                maze[r][c] = '0';
-//
-//                queue<pair<int, int>> my_queue;
-//
-//                my_queue.push({r, c});
-//
-//                while (!my_queue.empty()) {
-//
-//                    auto rc = my_queue.front();
-//                    my_queue.pop();
-//                    int row = rc.first, col = rc.second;
-//                    if (row - 1 >= 0 && maze[row - 1][col] == '1') {
-//                        my_queue.push({row - 1, col});
-//                        maze[row - 1][col] = '0';
-//                    }
-//                    if (row + 1 < row && maze[row + 1][col] == '1') {
-//                        my_queue.push({row + 1, col});
-//                        maze[row + 1][col] = '0';
-//                    }
-//                    if (col - 1 >= 0 && maze[row][col - 1] == '1') {
-//                        my_queue.push({row, col - 1});
-//                        maze[row][col - 1] = '0';
-//                    }
-//                    if (col + 1 < col && maze[row][col + 1] == '1') {
-//                        my_queue.push({row, col + 1});
-//                        maze[row][col + 1] = '0';
-//                    }
-//                }
-//
-//            }
-//        }
-//}
-//
+int maze_01(vector<vector<char>>& maze)
+{
+    if(maze.empty())
+        return 0;
+    int row = maze.size();
+    int col = maze[0].size();
+    int num_of_1 = 0;
 
+    for (int r = 0; r < row; ++r)
+        for (int c = 0; c < col; ++c)
+        {
+            if (maze[r][c] == '1')
+            {
+                ++ num_of_1;
+
+                maze[r][c] = '0';
+
+                queue<pair<int, int>> my_queue;
+
+                my_queue.push({r, c});
+
+                while (!my_queue.empty()) {
+
+                    auto rc = my_queue.front();
+                    my_queue.pop();
+                    int row = rc.first, col = rc.second;
+                    if (row - 1 >= 0 && maze[row - 1][col] == '1') {
+                        my_queue.push({row - 1, col});
+                        maze[row - 1][col] = '0';
+                    }
+                    if (row + 1 < row && maze[row + 1][col] == '1') {
+                        my_queue.push({row + 1, col});
+                        maze[row + 1][col] = '0';
+                    }
+                    if (col - 1 >= 0 && maze[row][col - 1] == '1') {
+                        my_queue.push({row, col - 1});
+                        maze[row][col - 1] = '0';
+                    }
+                    if (col + 1 < col && maze[row][col + 1] == '1') {
+                        my_queue.push({row, col + 1});
+                        maze[row][col + 1] = '0';
+                    }
+                }
+            }
+        }
+    return num_of_1;
+}
 
 // 最小公倍数
-//int min_sub(int num1, int num2)
+int min_sub(int num1, int num2)
+{
+    int x, y;
+    x = num1;
+    y = num2;
+    while(num1 != num2) {           //循环条件为两数不相等
+        if(num1 > num2)             //如果第一个数大于第二个数
+            num1 = num1 - num2;     //两数相减
+        else
+            num2 = num2 - num1;
+    }
+
+    return x*y/num1;
+}
+
+// 计算1-n中有多少数字包含１
+int count_how_many_1(int n)
+{
+    int count = 0;      //统计变量
+    int factor = 1;     //分解因子
+    int lower = 0;      //当前处理位的所有低位
+    int higher = 0;     //当前处理位的所有高位
+    int curr =0;        //当前处理位
+
+    while(n/factor != 0)
+    {
+        lower = n - n/factor*factor;        //求得低位
+        curr = (n/factor)%10;               //求当前位
+        higher = n/(factor*10);             //求高位
+
+        switch(curr)
+        {
+            case 0:
+                count += higher * factor;
+                break;
+            case 1:
+                count += higher * factor + lower + 1;
+                break;
+            default:
+                count += (higher+1)*factor;
+        }
+
+        factor *= 10;
+    }
+
+    return count;
+}
+
+
+// 按距离k间隔重排字符串 leetcode-358 加密题　bigo面试题
+// 先用 HashMap 或者Array 对字符串里的字符按出现次数进行统计，按次数由高到低进行排序。
+// 还是先统计字符出现的次数，按出现次数排列组成最大堆。
+// 然后每次从堆中去取topk 的字符排入结果，相应的字符数减1，如此循环，直到所有字符排完。
+
+string rearrangeString(string s, int k)
+{
+    if (k == 0) {
+        return s;
+    }
+    int len = s.size();
+    string result;
+    map<char, int> hash;                                // map from char to its appearance time
+    for(auto ch: s) {
+        ++hash[ch];
+    }
+    priority_queue<pair<int, char>> que;                // using priority queue to pack the most char first
+    for(auto val: hash) {
+        que.push(make_pair(val.second, val.first));
+    }
+    while(!que.empty()) {
+        vector<pair<int, int>> vec;
+        int cnt = min(k, len);
+        for(int i = 0; i < cnt; ++i, --len) {           // try to pack the min(k, len) characters sequentially
+            if(que.empty()) {                           // not enough distinct charachters, so return false
+                return "";
+            }
+            auto val = que.top();
+            que.pop();
+            result += val.second;
+            if(--val.first > 0) {                       // collect the remaining characters
+                vec.push_back(val);
+            }
+        }
+        for(auto val: vec) {
+            que.push(val);
+        }
+    }
+    return result;
+}
+
+
+// leetcode 621　任务调度
+// 先用哈希表或者数组对任务出现的次数进行统计，找出任务出现次数的最大值max_count(有可能是多个)，
+// 然后把这个任务(或者任务对)之间按n个间隔进行分隔排列，然后把其它任务插到这些间隔里面。
+// 由于其它任务出现的次数少于max_count所以肯定能放下，如有空位就是需要空闲(idle)。
+// 最后，还要注意的是，如果空位都插满之后还有任务，那就随便在这些间隔里面插入就可以，
+// 因为间隔长度肯定会大于n，在这种情况下就是任务的总数是最小所需时间。
+
+int leastInterval(vector<char>& tasks, int n)
+{
+    int mx = 0;       // 最长任务出现的次数
+    int mxCnt = 0;    // 最长任务出现的个数
+    vector<int> cnt(26, 0);
+    for (char task : tasks) {
+        ++cnt[task - 'A'];
+        if (mx == cnt[task - 'A']) {
+            ++mxCnt;
+        } else if (mx < cnt[task - 'A']) {
+            mx = cnt[task - 'A'];
+            mxCnt = 1;
+        }
+    }
+    int partCnt = mx - 1;            // 最多个数任务的间隔
+    int partLen = n - (mxCnt - 1);   // 在这些间隔中　插其他同样出现次数的任务　剩下的　如果剩下-1则都插满了　还可以插
+    int emptySlots = partCnt * partLen;
+    int taskLeft = tasks.size() - mx * mxCnt;
+    int idles = max(0, emptySlots - taskLeft);
+    return tasks.size() + idles;
+}
+
+
+// 拼多多第二批笔试　第二道算法题 直接用dfs做就可以了
+
+void dfs(vector<char>& res_one, vector<string>& res, string s1, string s2, string& s1_new, int N)
+{
+    if (s1_new == s2 && s1.size() == 0 && res_one.size() == N)
+    {
+        string ans;
+        for (int i = 0; i < res_one.size(); i  )
+        {
+            ans  = res_one[i];
+        }
+        res.push_back(ans);
+        return;
+    }
+
+    while (s1.size())
+    {
+        char tmp = s1[0];         // 取出最左边的
+        s1 = s1.substr(1);   // 然后这个是剩下的
+        // 学学这种写的方式　先push进去　然后pop出来
+        res_one.push_back('d');
+        dfs(res_one, res, s1, s2, s1_new, N);
+        res_one.pop_back();
+
+        res_one.push_back('l');
+        s1_new = tmp + s1_new;   // 将上一个牌的最左边放到新的最左边
+        dfs(res_one, res, s1, s2, s1_new, N);
+        s1_new = s1_new.substr(1);
+        res_one.pop_back();
+
+        res_one.push_back('r');
+        s1_new = s1_new + tmp; // 将上一个牌的最左边放到新的最右边
+        dfs(res_one, res, s1, s2, s1_new, N);
+        s1_new = s1_new.substr(0, s1_new.length() - 1);
+        res_one.pop_back();
+
+    }
+
+    return;
+}
+int fake_main()
+{
+    int T;
+    cin >> T;
+
+    string s1;
+    string s2;
+    string s1_new;
+
+    while (T--)
+    {
+        cin >> s1;
+        cin >> s2;
+        vector<char> res_one;
+        vector<string> res;
+
+        dfs(res_one, res, s1, s2, s1_new, s1.length());
+
+        sort(res.begin(), res.end());
+
+        cout << "{" << endl;
+
+        for (int i = 0; i < res.size(); i  )
+        {
+            for (int j = 0; j < s1.length(); j  )
+            {
+                cout << res[i][j] << " ";
+            }
+            cout << "\n";
+        }
+
+        cout << "}" << endl;
+    }
+
+    return 0;
+}
+
+
+
+
+// 拼多多第三题　多个筛子最大得分的期望
+#define for0(a, n) for (int (a) = 0; (a) < (n); (a)  )
+#define for1(a, n) for (int (a) = 1; (a) <= (n); (a)  )
+#define mem(a,x)  memset(a,x,sizeof a)
+
+const int maxN=50;
+const int maxK=50;
+
+double P[maxK+5];
+int cnt[maxK+5];
+int sum[maxK+5];
+int n,maxk;
+
+double solve(int x)
+{
+    int num_ge=sum[maxk]-sum[x-1];
+    if(!num_ge) return 0;
+
+    double p=1;
+
+    for(int i=x;i<=maxk;i  ) if(cnt[i])
+        {
+            p*= pow(1.0*x/i, cnt[i]);
+        }
+
+    double p2=1;
+    for(int i=x;i<=maxk;i  ) if(cnt[i])
+        {
+            p2*= pow(1.0*(x-1)/i,cnt[i] );
+        }
+
+    return  p-p2;
+
+}
+int fake_main2()
+{
+    std::ios::sync_with_stdio(false);
+    int x;
+    while(cin>>n)
+    {
+        mem(cnt,0);maxk=0;
+        for1(i,n)
+        {
+            cin>>x;maxk=max(maxk,x);cnt[x];
+        }
+        sum[0]=0;
+        for1(i,maxk)
+        sum[i]=sum[i-1] + cnt[i];
+
+        for1(i,maxk)  P[i]=solve(i);
+
+        double ans=0; for1(i,maxk)  ans =P[i]*i;
+        printf("%.2f\n",ans);
+    }
+
+    return 0;
+}
+
+
+
+
+
+// leetcode 单调递增数
+// 这道题用贪心　738
+int monotoneIncreasingDigits(int N)
+{
+    vector<int> nums;
+    long interval = 1000000000;
+    bool flag = false;
+    long resn = N;
+    while(interval)
+    {
+        auto bit = N/interval;
+        if(bit == 0 && !flag)
+        {
+            interval /= 10;
+            continue;
+        }
+        nums.push_back(bit);
+        flag = true;
+        if(interval == 1)
+            break;
+        N %= interval;
+        interval /= 10;
+    }
+    int max_index = 0;
+    long max_value = 0;
+    bool is_result = true;
+    for(int i = 0; i < nums.size()-1; i ++)
+    {
+        if(nums[i] <= nums[i+1])
+        {
+            if(nums[i] > max_value) {
+                max_index = i;
+                max_value = nums[i];
+            }
+        } else
+        {
+            if(nums[i] > max_value) {
+                max_index = i;
+                max_value = nums[i];
+            }
+            is_result = false;
+            break;
+        }
+    }
+
+    if(is_result)
+        return resn;
+
+    nums[max_index] -= 1;
+    for(int i = max_index + 1; i < nums.size(); i ++)
+    {
+        nums[i] = 9;
+    }
+
+    long res = 0;
+    long mul = pow(10, nums.size()-1);
+    for(int i = 0; i < nums.size(); i ++)
+    {
+        res += nums[i] * mul;
+        mul /= 10;
+    }
+    return res;
+};
+
+
+
+
+/*-----字符串快慢指针类------*/
+
+
+
+
+
+
+//string rearrangeString(string s, int k)
 //{
-//    int x, y;
-//    x = num1;
-//    y = num2;
-//    while(num1 != num2) {           //循环条件为两数不相等
-//        if(num1 > num2)             //如果第一个数大于第二个数
-//            num1 = num1 - num2;     //两数相减
-//        else
-//            num2 = num2 - num1;
+//    if (k == 0) {
+//        return s;
 //    }
-//
-//    return x*y/num1;
+//    int len = s.size();
+//    string result;
+//    map<char, int> hash;                                // map from char to its appearance time
+//    for(auto ch: s) {
+//        ++hash[ch];
+//    }
+//    priority_queue<pair<int, char>> que;                // using priority queue to pack the most char first
+//    for(auto val: hash) {
+//        que.push(make_pair(val.second, val.first));
+//    }
+//    while(!que.empty()) {
+//        vector<pair<int, int>> vec;
+//        int cnt = min(k, len);
+//        for(int i = 0; i < cnt; ++i, --len) {           // try to pack the min(k, len) characters sequentially
+//            if(que.empty()) {                           // not enough distinct charachters, so return false
+//                return "";
+//            }
+//            auto val = que.top();
+//            que.pop();
+//            result += val.second;
+//            if(--val.first > 0) {                       // collect the remaining characters
+//                vec.push_back(val);
+//            }
+//        }
+//        for(auto val: vec) {
+//            que.push(val);
+//        }
+//    }
+//    return result;
 //}
 
 
@@ -357,6 +799,7 @@ int dfs_kh(int &index, string &s) {
         }
     }
 }
+
 int dfs_normal(string &s, int start_index, int end_index) {
     int first;
     int second=-1;

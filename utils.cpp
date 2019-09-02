@@ -3,6 +3,7 @@
 //
 
 
+#include <sstream>
 #include "utils.h"
 
 using namespace std;
@@ -63,6 +64,25 @@ private:
     int _h;
 
 };
+
+// c++读取以逗号为分隔符的一串数字
+void read_num()
+{
+    string s;
+    vector<int> v;
+    getline(cin, s);
+    istringstream is(s);
+    int inter;
+    char ch;
+    while (is >> inter)
+    {
+        v.push_back(inter);
+        is >> ch;
+    }
+    for(int i=0;i<v.size();i++)
+        cout<<v[i]<<" ";
+    cout<<endl;
+}
 
 
 /*--------------------------------经典的背包问题-------------------------------*/
@@ -383,6 +403,7 @@ void multiset_example()
     cout << endl;
 
 }
+
 
 /*-----------------------------并查集-----------------------------------*/
 //int pre[200]; //存放第i个元素的父节点
