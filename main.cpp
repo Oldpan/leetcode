@@ -8,6 +8,7 @@
 #include <cctype>
 #include <stack>
 #include <map>
+#include <cstring>
 
 #include "test/test_concepts.h"
 //#include "test/test_thread.h"
@@ -49,8 +50,12 @@ using namespace std;
 
 int main()
 {
-    vector<int> test = {1,2,3,4,5,6,7};
-    cout << canPartition(test);
+
+
+
+
+
+
 
 
 

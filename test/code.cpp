@@ -77,7 +77,8 @@ vector<string> Permutation(string str) {
 }
 
 // 最长子数组的最大和一维dp即可  leetcode 53　动态规划
-int FindGreatestSumOfSubArray(vector<int> array) {
+int FindGreatestSumOfSubArray(vector<int> array)
+{
 
     auto len = array.size();
     if(len < 2)
@@ -275,6 +276,7 @@ void join(int root1, int root2)    // 判断是否连通，不连通就合并
     if(x != y)                     // 如果不连通，就把它们所在的连通分支合并
         pre[x] = y;
 }
+
 
 int findCircleNum(vector<vector<int>>& M)
 {
@@ -552,6 +554,55 @@ int fake_main()
 
 
 
+// 84　柱状图中的最大矩形
+// https://blog.csdn.net/Prasnip_/article/details/83690038
+int largestRectangleArea(vector<int>& heights)
+{
+    heights.push_back(0);     // 在最后面放一个0以计算将所有数据导出来的结果
+    auto len = heights.size();
+    stack<int> my_stack;
+    long res = 0;
+    long width;
+    long min_height;
+    stack<int> weight;         // 这个存储宽度的栈与my_stack同步操作
+
+
+    for(int i = 0; i < len; i ++)
+    {
+
+        if(my_stack.empty())
+        {
+            my_stack.push(heights[i]);
+            weight.push(1);        // 正常的都是１
+            continue;
+        }
+        if(my_stack.top() > heights[i])
+        {
+            width = 0;
+            min_height = INT32_MAX;
+            while (!my_stack.empty() && my_stack.top() >= heights[i])
+            {
+                long temp = my_stack.top();
+                long temp_height = weight.top();
+
+                width += temp_height;
+                min_height = min(min_height, temp);
+                res = max(res, width*min_height);
+
+                my_stack.pop();
+                weight.pop();
+            }
+        }
+
+        my_stack.push(heights[i]);
+        weight.push(1+width);  // 因为把高的都去掉了　但是要保留他们的宽度
+        width = 0;
+    }
+
+    return res;
+}
+
+
 
 // 拼多多第三题　多个筛子最大得分的期望
 #define for0(a, n) for (int (a) = 0; (a) < (n); (a)  )
@@ -610,8 +661,6 @@ int fake_main2()
 
     return 0;
 }
-
-
 
 
 
@@ -678,6 +727,223 @@ int monotoneIncreasingDigits(int N)
     }
     return res;
 };
+
+// 单词拆分 leetcode 139　动态规划 dp
+bool wordBreak(string s, vector<string>& wordDict) {
+
+    if(s.empty() || wordDict.empty())
+        return false;
+
+    // dp[i]表示字符串的前i个字符能否拆分成wordDict
+    vector<bool> dp(s.size() + 1, false);
+    unordered_set<string> m(wordDict.begin(), wordDict.end());
+    dp[0] = true;
+    for(int i = 1; i <= s.size(); i ++)
+    {
+        for(int j = 0; j < i; j ++)
+        {
+            if(dp[j] && m.find(s.substr(j, i-j)) != m.end())
+            {
+                dp[i] = true;
+                break;
+            }
+        }
+    }
+    return dp[s.size()];
+
+}
+
+
+// 单词搜索 leetcode 79
+class Solution_79
+{
+public:
+    bool exist(vector<vector<char>> &board, string word)
+    {
+        if (board.size() == 0)
+            return false;
+        h = board.size();
+        w = board[0].size();
+        for (int i = 0; i < w; i++)
+            for (int j = 0; j < h; j++)
+                if (search(board, word, 0, i, j))
+                    return true;
+        return false;
+    }
+
+    bool search(vector<vector<char>> &board,
+                const string &word, int d, int x, int y)
+    {
+        if (x < 0 || x == w || y < 0 || y == h || word[d] != board[y][x])
+            return false;
+
+        if (d == word.length() - 1)
+            return true;
+
+        char cur = board[y][x];
+        board[y][x] = 0;  // 注意这里必须设置为0 代表没有已经走过
+        bool found = search(board, word, d + 1, x + 1, y)
+                     || search(board, word, d + 1, x - 1, y)
+                     || search(board, word, d + 1, x, y + 1)
+                     || search(board, word, d + 1, x, y - 1);
+        board[y][x] = cur;  // 但是回来的时候记得复原
+        return found;
+    }
+
+private:
+    int w;
+    int h;
+
+};
+
+// 圆圈中最后剩下的数字 找规律求解出来 牛客原题
+int lastRemaining(int n, int m)
+{
+    if(n < 1 || m < 1)
+        return -1;
+
+    int last = 0;
+    for(int i = 2; i <= n; i ++)
+        last = (last + m) % i;
+    return last;
+}
+
+
+
+//　假设f(m,s)表示投第m个骰子时，点数之和s出现的次数,投第m个骰子时的点数之和只与投第m-1个骰子时有关。
+//递归方程：f(m,s)=f(m-1,s-1)+f(m-1,s-2)+f(m-1,s-3)+f(m-1,s-4)+f(m-1,s-5)+f(m-1,s-6)，
+// 表示本轮点数和为s出现次数等于上一轮点数和为s-1，s-2，s-3，s-4，s-5，s-6出现的次数之和。
+//初始条件：第一轮的f(1),f(2),f(3),f(4),f(5),f(6)均等于1.
+//需要求的是：f(n , n)、 f(n, n+1)....f(n, 6*n)
+
+// leetcode 1155 掷骰子的N中方法
+int numRollsToTarget(int d, int f, int target) {
+
+
+
+}
+
+
+// 携程第一道　分割区间的题　自己有点理解不好
+// aabbcddc -> 2,2,4
+//int fake_main()
+//{
+//    string s;
+//    cin >> s;
+//    unordered_map<char, int> m;
+//    unordered_map<char, bool> flag;
+//    int sum = 0, cur = 0;
+//    vector<int> res;
+//    for (int i = 0; i < s.size(); i++)
+//        m[s[i]]++;
+//    for (int i = 0; i < s.size(); i++) {
+//        if (flag.find(s[i]) == flag.end()) {
+//            sum += m[s[i]];
+//            flag[s[i]] = true;
+//        }
+//        cur++;
+//        if (cur == sum) {
+//            res.push_back(cur);
+//            cur = 0;
+//            sum = 0;
+//        }
+//    }
+//    for (int i = 0; i < res.size(); i++) {
+//        if (i != res.size() - 1)
+//            cout << res[i] << ',';
+//        else
+//            cout << res[i] << endl;
+//    }
+//    return 0;
+//}
+
+
+// 携程第三道　求最短旅游路线　dp
+void helper(int idx, int nums, int &res, int cur, vector<vector<pair<int, int>>> &neigh, vector<bool> &flag) {
+    if (idx == 0 && flag[idx] == true) {
+        if (nums == flag.size())
+            res = min(res, cur);
+        return;
+    }
+    for (int i = 0; i < neigh[idx].size(); i++) {
+        if (flag[neigh[idx][i].first] == false) {
+            flag[neigh[idx][i].first] = true;
+            helper(neigh[idx][i].first, nums + 1, res, cur + neigh[idx][i].second, neigh, flag);
+            flag[neigh[idx][i].first] = false;
+        }
+    }
+}
+int fakemain3() {
+    int n, m;
+    cin >> n >> m;
+    if (n == 1) {
+        cout << 0 << endl;
+        return 0;
+    }
+    vector<vector<pair<int, int>>> neigh(n);
+    while (m--) {
+        int a, b, t;
+        cin >> a >> b >> t;
+        neigh[a].push_back(make_pair(b, t));
+        neigh[b].push_back(make_pair(a, t));
+    }
+    vector<bool> flag(n, false);
+    int res = INT_MAX;
+    helper(0, 0, res, 0, neigh, flag);
+    if (res == INT_MAX)
+        cout << -1 << endl;
+    else
+        cout << res << endl;
+    return 0;
+}
+
+
+
+// 最长公共子序列(不是子串)
+// 其中dp[i][j]表示 A数组前i个和B数组前j个中的满足要求子序列的最长值
+int max_common_str1(string& a, string& b)
+{
+    auto length = a.size() > b.size() ? a.size() : b.size();
+    int dp[length+1][length+1];
+    memset(dp, 0, sizeof(dp));
+
+    for(int i = 0; i < a.size(); i ++)
+        for(int j = 0; j < b.size(); j ++)
+        {
+            if(a[i] == b[j])
+                dp[i+1][j+1] = dp[i][j] + 1;
+            else
+            {
+                dp[i+1][j+1] = max(dp[i][j+1], dp[i+1][j]);
+            }
+        }
+    return dp[a.size()][b.size()];
+}
+
+// 最长公共子子数组(也是子串)　leetcode 718
+// dp[i][j]表示  以A[i]B[j]为结尾的相同子串的最大长度
+int findLength(vector<int>& A, vector<int>& B) {
+
+    auto len1 = A.size();
+    auto len2 = B.size();
+    auto len = max(len1, len2);
+
+    int dp[len+1][len+1];
+    memset(dp, 0, sizeof(dp));
+    int max_length = 0;
+
+    for(int i = 0; i < len1; i ++)
+        for(int j = 0; j < len2; j ++)
+        {
+            if(A[i] == B[j])
+                dp[i+1][j+1] = dp[i][j] + 1;
+            max_length = max(max_length, dp[i+1][j+1]);
+        }
+    return max_length;
+}
+
+
+
 
 
 
@@ -799,7 +1065,6 @@ int dfs_kh(int &index, string &s) {
         }
     }
 }
-
 int dfs_normal(string &s, int start_index, int end_index) {
     int first;
     int second=-1;
@@ -1143,3 +1408,102 @@ int dfs_normal(string &s, int start_index, int end_index) {
 //}
 //cout << res << endl;
 //}
+
+
+//　这个函数执行5次打印　12345
+void test()
+{
+    static int a = 0;
+    a += 1;
+    cout << a;
+}
+
+
+// leetcode 864　获取所有钥匙的最短路径
+vector<string> maze = {"@.a.#",
+                       "###.#",
+                       "b.A.B"};
+
+int shortestPathAllKeys(vector<string>& grid)
+{
+    int start_x = 0;
+    int start_y = 0;
+    int row = grid.size();
+    int col = grid[0].size();
+    int n = 0;          // 共有多少把钥匙
+
+    /*find key and lock*/
+    for(int i = 0;i < row; ++i){
+        for(int j = 0;j < col; ++j){
+            if(grid[i][j] >= 'a' && grid[i][j] <= 'z'){
+                n++;
+            }
+            if(grid[i][j] == '@'){
+                start_x = i;
+                start_y = j;
+            }
+        }
+    }
+
+    int mask = (1<<n) - 1;    // 如果是两把钥匙　那么状态就是　(1<<2)-1 = 011 也就是第0位代表第一把钥匙　第1为代表第二把钥匙
+    int visit[30][30][128];   // 2^7 = 128  收集不同的状态　
+    int step = -1;
+    int d[4][2] = {{0,1},{0,-1},{1,0},{-1,0}};
+    queue<pair<pair<int,int>,int>> qu;    // 状态变量  用于记录每一步的情况　保证不同分支不会走重复的路
+
+    /*initial*/
+    memset(visit,0,sizeof(visit));
+    qu.push(make_pair(make_pair(start_x,start_y),0));
+    visit[start_x][start_x][0] = true;
+
+    /*get*/
+    while(!qu.empty()) {
+        int mx = qu.size();
+        step++;
+
+        for (int i = 0; i < mx; ++i) {
+            int x = qu.front().first.first;
+            int y = qu.front().first.second;
+            int state = qu.front().second;
+            qu.pop();
+
+            if (state == mask) {
+                return step;
+            }
+
+            for (int j = 0; j < 4; ++j) {
+                int x1 = x + d[j][0];
+                int y1 = y + d[j][1];
+                if (x1 >= 0 && y1 >= 0 && x1 < row && y1 < col) {
+                    /*wall*/
+                    if (grid[x1][y1] == '#') {
+                        continue;
+                    } else if (grid[x1][y1] >= 'a' && grid[x1][y1] <= 'f') {
+                        /*key*/
+                        int currState = state | (1 << (grid[x1][y1] - 'a'));
+                        if (!visit[x1][y1][currState]) {
+                            visit[x1][y1][currState] = 1;
+                            qu.push(make_pair(make_pair(x1, y1), currState));
+                        }
+                    } else if (grid[x1][y1] >= 'A' && grid[x1][y1] <= 'F') {
+                        /*lock*/
+                        if (!visit[x1][y1][state]) {
+                            if (state & (1 << (grid[x1][y1] - 'A'))) {
+                                visit[x1][y1][state] = 1;
+                                qu.push(make_pair(make_pair(x1, y1), state));
+                            }
+                        }
+                    } else if (grid[x1][y1] == '.' || grid[x1][y1] == '@') {
+                        /*room*/
+                        if (!visit[x1][y1][state]) {
+                            visit[x1][y1][state] = 1;
+                            qu.push(make_pair(make_pair(x1, y1), state));
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+    return -1;
+}
