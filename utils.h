@@ -12,8 +12,11 @@
 #include <iterator>
 #include <algorithm>
 #include <unordered_map>
+#include <sstream>
+#include <string.h>
 
 #define random(s,e) (rand()%e+s)
+#define filename(x) strrchr(x,'/')?strrchr(x,'/')+1:x
 
 using namespace std;
 

@@ -817,11 +817,13 @@ int lastRemaining(int n, int m)
 //需要求的是：f(n , n)、 f(n, n+1)....f(n, 6*n)
 
 // leetcode 1155 掷骰子的N中方法
-int numRollsToTarget(int d, int f, int target) {
+int numRollsToTarget(int d, int f, int target)
+{
 
 
 
 }
+
 
 
 // 携程第一道　分割区间的题　自己有点理解不好
@@ -1410,6 +1412,14 @@ int dfs_normal(string &s, int start_index, int end_index) {
 //}
 
 
+
+
+
+
+
+
+
+
 //　这个函数执行5次打印　12345
 void test()
 {
@@ -1418,8 +1428,8 @@ void test()
     cout << a;
 }
 
-
 // leetcode 864　获取所有钥匙的最短路径
+// 广搜的一个经典题
 vector<string> maze = {"@.a.#",
                        "###.#",
                        "b.A.B"};
@@ -1507,3 +1517,6 @@ int shortestPathAllKeys(vector<string>& grid)
     }
     return -1;
 }
+
+
+// 找零钱系列问题，如果物品是固定的，那么可以使用贪心做，如果是动态的，就需要背包做了

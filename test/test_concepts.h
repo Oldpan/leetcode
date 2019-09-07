@@ -59,6 +59,7 @@ public:	//new的重载
 };
 
 
+
 class Base
 {
 public:
@@ -123,6 +124,7 @@ void test_new_and_mal();
 void test_vector();
 void test_lower_bound();
 void test_priority();
+void test_dynamic_cast();
 
 
 

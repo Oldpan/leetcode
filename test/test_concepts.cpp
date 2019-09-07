@@ -307,5 +307,36 @@ void test_construt_order()
     delete derive2;   // 而这里base和derive的析构函数都执行了 先derive后base
 }
 
+void test_dynamic_cast()
+{
+    Derive derive;
+    derive.shout();
+    Base& ref = derive;
+    ref.shout();
+    Base* ptr = &derive;
+    ptr->shout();
+    Base base = derive;   // 这句话会导致　对象切片　slicing object
+    base.shout();
 
+    // 当我们将一个派生类对象直接赋值给基类对象时，仅仅基类的部分被复制，
+    // 派生类的那部分信息将丢失。我们称这种现象为“对象切片”：对象丢失了自己原有的部分信息。
+    // 使用对象本身并没有问题，但是处理不当，会造成很多问题，看下面的例子：
+
+    Derive a;
+    Derive b;
+    Base& c = a;
+    c = b;    // 这里将a的基类部分赋予给了C　也就是说C中有b基类部分以及a的派生部分
+
+}
+
+// dynamic_cast在运行时检测底层对象的类型信息。
+// 如果类型转换没有意义，那么它将返回一个空指针（对于指针类型）
+void process(Base* ptr)
+{
+    Derive* derive = dynamic_cast<Derive*>(ptr);
+    if(derive == nullptr)
+    {
+        return ;
+    }
+}
 

@@ -52,7 +52,7 @@
 class President {
 public:
     static President& GetInstance() {
-        static President instance;
+        static President instance;  // 因为是static所以只能创建一次　
         return instance;
     }
 

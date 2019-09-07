@@ -51,10 +51,7 @@ using namespace std;
 int main()
 {
 
-
-
-
-
+    test_dynamic_cast();
 
 
 
