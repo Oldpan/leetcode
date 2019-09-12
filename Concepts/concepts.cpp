@@ -37,50 +37,55 @@ int unit_sold{0};
 
 
 /*-- const-, volatile-, and ref-qualified member functions --*/
-//struct Array {
-//    std::vector<int> data;
-//    Array(int sz) : data(sz) {}
-//    // const member function
-//    int operator[](int idx) const {
-//        // this has type const Array*
-//        return data[idx]; // transformed to (*this).data[idx];
-//    }
-//    // non-const member function
-//    int& operator[](int idx) {
-//        // this has type Array*
-//        return data[idx]; // transformed to (*this).data[idx]
-//    }
-//};
-//int main()
-//{
-//    Array a(10);
-//    a[1] = 1; // OK: the type of a[1] is int&
-//    const Array ca(10);
-//    ca[1] = 2; // Error: the type of ca[1] is int
-//}
+struct Array {
+    std::vector<int> data;
+    Array(int sz) : data(sz) {}
+    // const member function
+    int operator[](int idx) const {
+        // this has type const Array*
+        return data[idx]; // transformed to (*this).data[idx];
+    }
+    // non-const member function
+    int& operator[](int idx) {
+        // this has type Array*
+        return data[idx]; // transformed to (*this).data[idx]
+    }
+};
 
 
+void test_const_volatile()
+{
+    Array a(10);
+    a[1] = 1; // OK: the type of a[1] is int&
+    const Array ca(10);
+//    ca[1] = 2; // Error: the type of ca[1] is int 这句话无法编译
+}
 
 
 // [](int x, int y) -> int { int z = x + y; return z; } 匿名函数
 
 
 /*---类的隐式类型转换---*/
-//class Value{
-//public:
-//    explicit Value(int value):value_(value){}
-//    explicit operator double () const;
-//
-//private:
-//    int value_;
-//};
-//
-//Value::operator double() const {
-//    return static_cast<double>(value_);
-//}
-//
-//Value tt(5);
-//double temp = (double)tt * 0.5;
+class Value{
+public:
+    explicit Value(int value):value_(value){}
+    explicit operator double () const;
+
+private:
+    int value_;
+};
+
+Value::operator double() const {
+    return static_cast<double>(value_);
+}
+
+void test_class_implicit()
+{
+    Value tt(5);
+    double temp = (double)tt * 0.5;
+}
+
+
 
 
 ///*-- 变长参数函数 --*/

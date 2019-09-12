@@ -3,12 +3,13 @@
 #include <algorithm>
 #include <queue>
 #include <sstream>
-#include <vector>
 #include <unordered_map>
 #include <ctype.h>
 #include <stack>
+#include <map>
 
 #include "test/test_concepts.h"
+
 //#include "test/test_thread.h"
 ////#include "test/test_design_pattern.h"
 //#include "utils.h"
@@ -17,164 +18,112 @@
 using namespace std;
 
 
-//vector<int> GetLeastNumbers_Solution(vector<int> input, int k) {
-//
-//    priority_queue<int, vector<int>> min_heap;
-//    vector<int> result;
-//    for(int i = 0; i < input.size(); i ++)
-//    {
-//        if(min_heap.size() < k)
-//        {
-//            min_heap.push(input[i]);
-//            continue;
-//        }
-//        if(min_heap.top() > input[i])
-//        {
-//            min_heap.pop();
-//            min_heap.push(input[i]);
-//        }
-//    }
-//    while(!min_heap.empty()){
-//        result.push_back(min_heap.top());
-//        min_heap.pop();
-//    }
-//
-//    return result;
-//}
 
 
+// 华为笔试第三题 逻辑计算 和 加减乘除类似
+// 遇到& 有三种情况 要考虑 & 的优先级
+// 第一种遇到正常字符或者（，那么就把这个（）内取值，或者正常数字作为第二个数，
+// 接着循环，如果遇到&或者|或者直接到末尾了表示&该计算了，就把第一个数和第二个数做个&操作，作为外层的第一个数
 
+int dfs_normal(string &s, int start_index, int end_index);
 
-
-//函数功能: 计算Catalan的第n项
-//函数参数: n为项数
-//返回值:  第n个Catalan数
-
-int Catalan(int n)
-{
-    if(n<=1) return 1;
-    int *h = new int [n+1]; //保存临时结果
-    h[0] = h[1] = 1;        //h(0)和h(1)
-    for(int i=2;i<=n;++i)    //依次计算h(2),h(3)...h(n)
-    {
-        h[i] = 0;
-        for(int j = 0; j < i; j++) //根据递归式计算 h(i)= h(0)*h(i-1)+h(1)*h(i-2) + ... + h(i-1)h(0)
-            h[i] += (h[j] * h[i-1-j]);
-    }
-    int result = h[n]; //保存结果
-    delete [] h;       //注意释放空间
-    return result;
-}
-
-
-enum Status
-{
-    UNKNOWN = 0,
-    BAD,
-    GOOD
-};
-
-bool canJump(vector<int>& nums) {
-
-    auto len = nums.size();
-
-    vector<Status> status(len, Status::UNKNOWN);
-    status[len-1] = Status::GOOD;
-    for(int i = len-2; i >= 0; i --)
-    {
-        int furthest_len = min(i + nums[i], int(len - 1));
-        for(int j = i + 1; j <= furthest_len; j ++)
-        {
-            if(status[j] == Status::GOOD)
-            {
-                status[i] = Status::GOOD;
-                break;
-            }
+int dfs_kh(int &index, string &s) {
+    for (int i = index; i< s.size(); ++i) {
+        if (s[i] == '(')
+            dfs_kh(++i, s);
+        else if (s[i] == ')') {
+            bool res = dfs_normal(s, index, i);
+            index = i;
+            return res;
         }
     }
-    return status[0] == Status::GOOD;
 }
 
+int dfs_normal(string &s, int start_index, int end_index) {
+    int first;
+    int second=-1;
+    bool fei = false;
+    for (int i = start_index; i < end_index; ++i) {
+        if (s[i] == '(') {
+            first = dfs_kh(++i, s);
+        }
+        else if (s[i] == '&') {
+            bool fei2 = false;
+            int second2;
+            if (fei) {
+                first = first ^ 1;
+                fei = false;
+            }
+            int j;
+            for (j = i + 1; j < end_index;++j) {  // 因为&的优先级高 所以内循环
+                if (s[j] == '(') {
+                    second2 = dfs_kh(++j, s);
+                }
+                else if (s[j] == '|'||s[j]=='&') {
+                    if (fei2)
+                        second2 = second2 ^ 1;
+                    first = first & second2;
+                    i = j - 1;
+                    break;
+                }
+                else if (s[j] == '!')
+                    fei2 = true;
+                else
+                    second2 = s[j];
+            }
+            if (j == end_index) {
+                first = first&second2;
+                i = j - 1;
+            }
+        }
+        else if (s[i] == '|') {
+            second = dfs_normal(s, i + 1, end_index);
+            break;
+        }
+        else if (s[i] == '!') {
+            fei = true;
+        }
+        else {
+            first = s[i] - '0';
+        }
+    }
+    if (fei) {
+        first = first ^ 1;
+    }
+    if (second == -1)
+        return first;
+    return first|second;
+}
+
+
+int recur(int a, int b)
+{
+    if( a >= b)
+    {
+        if(a == b)
+            return a;
+        else
+            return 0;
+    } else{
+        return recur(a+1, b-1) + a + b;
+    }
+}
 
 int main()
 {
+//    string s;
+//    cin >> s;
+//    cout << dfs_normal(s, 0, s.size());
+
+    cout << recur(8,2012);
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-//    int nums = 10;
-//    int len = 3;
-//    float sub_value = float(nums) / len;
-//    if(int(sub_value) != sub_value)
-//        cout << "!!!";
 
 //    test_vector();
 
-//    int n,m;
-//    cin >> n;
-//    cin >> m;
-//    vector<int> first;
-//    vector<int> second;
-//    vector<int> index_num_1(m,0);
-//    vector<int> index_num_2(m,0);
-//    int temp;
-//    for(int i = 0; i < n; i ++)
-//    {
-//        cin >> temp;
-//        first.push_back(temp);
-//        index_num_1[temp] ++;
-//    }
-//    for(int i = 0; i < n; i ++)
-//    {
-//        cin >> temp;
-//        second.push_back(temp);
-//        index_num_2[temp] ++;
-//    }
-//
-//    vector<int> res(n, 0);
-//    int count = 0;
-//
-//    for(int sub_num = 0; sub_num <= m; sub_num ++)
-//    {
-//        for(int i = m-sub_num-1; i >= 0; i --)
-//        {
-//
-//            if(index_num_1[i] > 0 && index_num_2[m-1-i-sub_num] > 0)
-//            {
-//                res[count++] = m-1;
-//                index_num_1[i] --;
-//                index_num_2[m-1-i-sub_num] --;
-//            }
-//
-//            for(int tt = m-1; tt >=0; tt --)
-//                for(int j = m-1; j >= 0; j--)
-//                {
-//                    if(index_num_1[tt] > 0 && index_num_2[j] > 0 && (tt+j) % m == i)
-//                    {
-//                        res[count++] = m-1;
-//                        index_num_1[tt] --;
-//                        index_num_2[j] --;
-//                    }
-//                }
-//        }
-//
-//    }
-//
-//    for(int i = 0; i < n; i ++)
-//        cout << res[i] << ' ' ;
-//    return 0;
+
 
 
 

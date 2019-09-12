@@ -11,14 +11,19 @@
 #include <set>
 #include <iterator>
 #include <algorithm>
+#include <unordered_map>
+#include <sstream>
+#include <string.h>
 
 #define random(s,e) (rand()%e+s)
+#define filename(x) strrchr(x,'/')?strrchr(x,'/')+1:x
 
 using namespace std;
 
 char* number2char(int n);
 void my_swap(int& a, int& b);
 int partition(vector<int>& data, int start, int end);
+void quick_sort(vector<int>& nums, int begin, int end);
 void set_example();
 void multiset_example();
 bool IsBig_Endian();

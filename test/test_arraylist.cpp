@@ -5,14 +5,14 @@
 #include "test_arraylist.h"
 
 
-void test_init_arraylist()
-{
+//void test_init_arraylist()
+//{
 //    linearLIst<int> *x = (linearLIst<int>) new arrayList<int>(100);
 //    arrayList<double> y(100);
 //    arrayList<char> z;
 //    arrayList<double> w(y);
-
-}
+//
+//}
 
 
 // 在执行这个函数的时候发生了 错误 这个错误与定义模板类的位置有关系

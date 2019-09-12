@@ -5,10 +5,13 @@
 #include <vector>
 #include <string>
 #include <queue>
+#include <memory>
 #include "test_concepts.h"
 #include "../DataStructure/linearlist.h"
 #include "../DataStructure/matrix.h"
 #include "../Concepts/smartPtr.h"
+
+using namespace std;
 
 int test_add(int a, int b)
 {
@@ -190,6 +193,19 @@ void test_array_name()
     cout << &text+1 << endl;                // 0x7ffee4ffba44  16进制 0x14 --> 十进制的4*5=20
 }
 
+void test_lower_bound()
+{
+    vector<int> test = {1,2,3,4,5,6,7,8,9};
+    // 返回数值第一次出现的位置　大于或等于val的第一个元素位置
+    int low = lower_bound(test.begin(), test.end(), 5) - test.begin();
+    // 返回的是数值 最后一个 出现的位置 大于val的第一个元素位置
+    int high = upper_bound(test.begin(), test.end(), 5) - test.begin();
+    // 返回的是是否存在这么一个数，是一个bool值
+    bool is_exist = binary_search(test.begin(), test.end(), 4);
+    cout << low << endl;
+    cout << high << endl;
+}
+
 void test_vector()
 {
     std::vector<int> v = {0, 1, 2, 3, 4, 5};
@@ -221,6 +237,7 @@ void test_vector()
     for (int n : a) // the initializer may be an array
         std::cout << n << ' ';
 
+    fill(v.begin(), v.end(), 0); // fill the vector value to 0
     for (int n : a)
         std::cout << 1 << ' '; // the loop variable need not be used
 
@@ -241,7 +258,7 @@ void test_priority()
     max_heap.pop();
     cout << max_heap.top() << endl;
 
-    priority_queue<int, vector<int>, greater<>> min_heap;   // 最小堆
+    priority_queue<int, vector<int>, greater<int> > min_heap;   // 最小堆
     for(int& i : test)
         min_heap.push(i);
     cout << min_heap.top() << endl;
@@ -251,7 +268,6 @@ void test_priority()
     cout << min_heap.top() << endl;
     min_heap.pop();
     cout << min_heap.top() << endl;
-
 };
 
 void test_new_operater()
@@ -265,15 +281,62 @@ void test_new_operater()
     pArray = NULL;
 }
 
+void test_new_and_mal()
+{
+    // 用malloc()函数在堆区分配一块内存空间，然后用强制类型转换将该块内存空间
+    // 解释为是一个TEST类对象，这不会调用TEST的默认构造函数
+    TEST * pObj1 = (TEST *)malloc(sizeof(TEST));
+    pObj1->Print();
+
+    // 用new在堆区创建一个TEST类的对象，这会调用TEST类的默认构造函数
+    TEST * pObj2 = new TEST;
+    pObj2->Print();
+}
+
 // 测试派生类构造函数的顺序以及其他
 void test_construt_order()
 {
 //    Base* base = new Base();
     Base* derive = new Derive();
     derive->shout_warp();   // 还是derive的
-    delete derive;   // 这里只执行了base的析构函数
+    delete derive;   // 这里只执行了base的析构函数 而没有执行derive的析构函数　导致内存泄露
+    // 解决方法是将base的析构函数定义为虚函数
     cout << "----------------" << endl;
     Derive* derive2 = new Derive();
     derive2->shout_warp();
-    delete derive2;   // 而这里base和derive的析构函数都执行了
+    delete derive2;   // 而这里base和derive的析构函数都执行了 先derive后base
 }
+
+void test_dynamic_cast()
+{
+    Derive derive;
+    derive.shout();
+    Base& ref = derive;
+    ref.shout();
+    Base* ptr = &derive;
+    ptr->shout();
+    Base base = derive;   // 这句话会导致　对象切片　slicing object
+    base.shout();
+
+    // 当我们将一个派生类对象直接赋值给基类对象时，仅仅基类的部分被复制，
+    // 派生类的那部分信息将丢失。我们称这种现象为“对象切片”：对象丢失了自己原有的部分信息。
+    // 使用对象本身并没有问题，但是处理不当，会造成很多问题，看下面的例子：
+
+    Derive a;
+    Derive b;
+    Base& c = a;
+    c = b;    // 这里将a的基类部分赋予给了C　也就是说C中有b基类部分以及a的派生部分
+
+}
+
+// dynamic_cast在运行时检测底层对象的类型信息。
+// 如果类型转换没有意义，那么它将返回一个空指针（对于指针类型）
+void process(Base* ptr)
+{
+    Derive* derive = dynamic_cast<Derive*>(ptr);
+    if(derive == nullptr)
+    {
+        return ;
+    }
+}
+

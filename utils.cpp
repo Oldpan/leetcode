@@ -3,6 +3,7 @@
 //
 
 
+
 #include "utils.h"
 
 using namespace std;
@@ -64,6 +65,25 @@ private:
 
 };
 
+// c++读取以逗号为分隔符的一串数字
+void read_num()
+{
+    string s;
+    vector<int> v;
+    getline(cin, s);
+    istringstream is(s);
+    int inter;
+    char ch;
+    while (is >> inter)
+    {
+        v.push_back(inter);
+        is >> ch;
+    }
+    for(int i=0;i<v.size();i++)
+        cout<<v[i]<<" ";
+    cout<<endl;
+}
+
 
 /*--------------------------------经典的背包问题-------------------------------*/
 
@@ -110,8 +130,9 @@ vector<int> mergeSort(vector<int>& array, int begin, int end)
 }
 
 
-// 堆排序
 
+
+// 堆排序
 // 调整数组中index位置的数组 使其满足最小根的性质
 void heap_insert(vector<int>& array, int index)
 {
@@ -154,7 +175,10 @@ void heapSort(vector<int>& array)
 
 
 
-
+//  大端模式，是指数据的高字节保存在内存的低地址中，而数据的低字节保存在内存的高地址中，这样的存储模式有点儿类似于把数据当作字符串顺序处理：
+// 地址由小向大增加，而数据从高位往低位放；这和我们的阅读习惯一致。
+//  小端模式，是指数据的高字节保存在内存的高地址中，而数据的低字节保存在内存的低地址中，
+// 这种存储模式将地址的高低和数据位权有效地结合起来，高地址部分权值高，低地址部分权值低。
 /*--------------------------------判断大小端----------------------------------*/
 
 bool IsBig_Endian()
@@ -164,12 +188,10 @@ bool IsBig_Endian()
         return true;
     else
         return false;
-
 }
 
 
 // atoi 字符串变数字  leetcode中有原题
-
 
 /*-------------------------------数字变字符串----------------------------------*/
 // 使用 to_string函数 也可以实现 数字变string
@@ -232,7 +254,7 @@ int partition(vector<int>& data, int start, int end)
     if(data.empty() || start < 0 || end >= length)
         return -1;
 
-    int index = random(start, end);
+    int index = random(start, end); // 随机函数慎用 直接选取第一个值充当index也行
     my_swap(data[index], data[end]);
 
     int small = start - 1;
@@ -253,9 +275,20 @@ int partition(vector<int>& data, int start, int end)
     return small;
 }
 
+void quick_sort(vector<int>& nums, int begin, int end)
+{
+    if(begin == end)
+        return ;
+    int index = partition(nums, begin, end);
+    if(index < end)
+        quick_sort(nums, begin, index - 1);
+    if(index > begin)
+        quick_sort(nums, index + 1, end);
+}
+
+
 
 /*-------------------------------Set与Multiset----------------------------------*/
-
 void set_example()
 {
     /*type of the collection:
@@ -375,6 +408,106 @@ void multiset_example()
 
 }
 
+
+void test_array_address()
+{
+    int *p[2];   // p是包含两个元素的指针数组，指针指向的是int型
+    int a[3] = {1,2,3};
+    int b[4] = {4,5,6,7};
+    p[0] = a;
+    p[1] = b;
+    for(int i = 0; i < 3; i ++)
+        cout << *p[0] + i << endl;   // cout << **p + i;
+    for(int j = 0; j < 4; j ++)
+        cout << *p[1] + j << endl;
+
+    int (*pp)[2];    // 它相当于一个二维数组的用法，只是它是一个n行2列的数组
+    int bb[3][2] = {{1,2},{3,4},{5,6}};
+    pp = bb;
+    for(int i = 0; i < 3; i ++)
+        for(int j = 0; j < 2; j ++)
+            cout << pp[i][j];  // cout << *(*(p+i)+j);
+
+
+    int ** array;    // 为行数确定、列数不确定，即为2*n型的
+    array = new int*[2];
+    array[0] = a;   // *array = a;
+    array[1] = b;   // *(array+1) = b;
+    for(int i = 0; i < 3; i ++)
+        cout << array[0][i];  // cout << *array[0] + i;
+    for(int j = 0; j < 4; j ++)
+        cout << array[1][j];  // cout << *array[1] + j;
+}
+
+// 通过这些信息可以打印我们的系统运行时候的错误信息位置
+void print_information()
+{
+    printf("当前源代码函数名：__FUNCTION__==%s\n",__FUNCTION__);
+    printf("当前源代码行号：__LINE__==%d\n",__LINE__);
+    printf("当前源代码文件名：__FILE__==%s\n",__FILE__);
+    printf("当前源代码文件名,去掉路径：__FILE__==%s\n",filename(__FILE__));
+    printf("当前编译日期〔注意和当前系统日期区别开来〕:__DATE__==%s\n",__DATE__);
+    printf("当前编译时间〔注意和当前系统日期区别开来〕:__TIME__==%s\n",__TIME__);
+    printf("当前系统时间戳：__TIMESTAMP__==%s\n",__TIMESTAMP__);
+    printf("当要求程序严格遵循ANSIC标准时该标识符被赋值为1:__STDC__==%d\n",__STDC__);
+    printf("当用C++编译程序编译时，标识符__cplusplus就会被定义:__cplusplus==%ld\n",__cplusplus);
+}
+
+
+
+/*-----------------------------并查集-----------------------------------*/
+// 在code.cpp中写了代码
+//int pre[200]; //存放第i个元素的父节点
+//
+//int unionsearch(int root) //查找根结点
+//{
+//    int son, tmp;
+//    son = root;
+//    while(root != pre[root]) //寻找根结点
+//        root = pre[root];
+//    while(son != root)   //路径压缩
+//    {
+//        tmp = pre[son];
+//        pre[son] = root;
+//        son = tmp;
+//    }
+//    return root;
+//}
+//
+//void join(int root1, int root2)  //判断是否连通，不连通就合并
+//{
+//    int x, y;
+//    x = unionsearch(root1);
+//    y = unionsearch(root2);
+//    if(x != y)                  //如果不连通，就把它们所在的连通分支合并
+//        pre[x] = y;
+//}
+//
+//int findCircleNum(vector<vector<int>>& M)
+//{
+//    auto row = M.size();
+//    auto col = M[0].size();
+//    int res = 0;
+//    unordered_map<int, int> friends;
+//    for(int i = 0; i < 200; i ++)
+//        pre[i] = i;
+//
+//    for(int i = 0; i < row; i++)
+//        for(int j = 0; j < col; j ++)
+//        {
+//            if(M[i][j] == 1)
+//                join(i,j);
+//        }
+//
+//    for(int i = 0; i < row; i ++)
+//    {
+//        if(!friends.count(pre[i]))
+//            friends.insert({i,1});
+//    }
+//
+//    res = friends.size();
+//    return res;
+//}
 
 
 

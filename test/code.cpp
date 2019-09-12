@@ -2,6 +2,12 @@
 
 #include <iostream>
 #include <vector>
+#include <queue>
+#include <map>
+#include <algorithm>
+#include <stack>
+#include <cmath>
+#include <unordered_set>
 
 using namespace std;
 
@@ -23,93 +29,904 @@ void backtrack(vector<int> &nums,vector<vector<int>> &res,int i){
 void backtrack_order(vector<int> &nums,vector<vector<int>> &res,int i){
 
     auto length = nums.size();
-
     while(true)
     {
         int j,k;
-        res.push_back(nums);
+        res.push_back(nums); // 首先把第一个push进去
 
-        for (j = length - 2; j >= 0 && nums[j] > nums[j + 1]; j--);  //注意此处 j >= 0 判断条件在前
+        for (j = length - 2; j >= 0 && nums[j] > nums[j + 1]; j--);  //注意此处 j >= 0 判断条件在前 找到第一个左边比右边小的
 
         if (j < 0)
             break;
 
-        for (k = length - 1; k > j && nums[k] < nums[j]; k--);
+        for (k = length - 1; k > j && nums[k] < nums[j]; k--);  // 从右到左找到第一个比j大的数
 
-        swap(nums[k], nums[j]);
+        swap(nums[k], nums[j]);  // 交换
 
-        for (int l = j + 1, r = length - 1; l < r; l++, r--)
+        for (int l = j + 1, r = length - 1; l < r; l++, r--)  // 将j后面的数 都交换顺序
             swap(nums[l], nums[r]);
 
         break;
     }
 }
 
+// 字符串的字典排列 不知道为什么在牛客上会超时
+vector<string> Permutation(string str) {
+
+    vector<string> res;
+    auto len = str.size();
+
+    while(true)
+    {
+        int j,k;
+        res.push_back(str);
+
+        for(j = len - 2; j >= 0 && str[j] > str[j+1]; j --);
+
+        if(j < 0)
+            break;
+
+        for(k = len - 1; k > j && str[k] < str[j]; k --);
+
+        swap(str[k], str[j]);
+
+        for(int l = j + 1, r = len - 1; l < r; l ++, r --)
+            swap(str[l], str[r]);
+    }
+
+    return res;
+}
+
+// 最长子数组的最大和 一维dp即可  leetcode 53　动态规划
+int FindGreatestSumOfSubArray(vector<int> array)
+{
+
+    auto len = array.size();
+    if(len < 2)
+        return array[0];
+
+    vector<int> dp(len, 0);
+    dp[0] = array[0];
+    int max_len = dp[0];
+    for(int i = 1; i < len; i++)
+    {
+        dp[i] = max(array[i], array[i] + dp[i-1]);
+        max_len = max(max_len, dp[i]);
+    }
+
+    return max_len;
+}
+
+
+
+
+
+
+//416. 分割等和子数组　转化为背包问题做 动态规划
+bool canPartition(vector<int>& nums)
+{
+    int sum = 0;
+    auto len = nums.size();
+    for(int i = 0; i < nums.size(); i ++)
+        sum += nums[i];
+    if(sum % 2 != 0 || len < 2)
+        return false;
+    int target = sum/2;
+
+    vector<vector<int>> dp(len+1, vector<int>(target+1, 0));
+    for(int i = 1; i <= len; i ++)
+        for(int j = 1; j <= target; j ++)
+        {
+            if(j >= nums[i-1])
+                dp[i][j] = max(dp[i-1][j], dp[i-1][j-nums[i-1]] + nums[i-1]);
+            else
+                dp[i][j] = dp[i-1][j];
+        }
+
+    return dp[len][target] == target;
+}
+
+// 美团第一题比较函数 比较两个字符串　学习字符串比较规则
+// 规则 从第一个字符开始比较 在后面的字母比在前面的字母大
+// 如果两个字符串的前缀一样 那么短的在前面
+bool cmp(string& s1, string& s2)
+{
+    if(s1.empty())
+        return true;
+    if(s2.empty())
+        return false;
+    int min_len = min(s1.size(), s2.size());
+    for(int i = 0; i < min_len; i ++)
+    {
+        if(s1[i] > s2[i])
+            return true;
+        else
+            if(s1[i] < s2[i])
+                return false;
+    }
+    return s1.size() <= s2.size();
+}
+
+
+// leetcode 164 给定一个无序的数组，找出数组在排序之后，相邻元素之间最大的差值。
+// 这个题是陌陌的现场笔试第一题
+// 设置n+1个桶是为了保证间距最大的两个数被分到不同的桶中
+// 因为最大间距 x >= (max_val - min_val) / (n-1)
+// 而使用n+1个桶每个桶中数的差值最大为 (max_val - min_val) / n 因此一个桶不可能同时存放间距最大的两个数
+typedef pair<int, int> min_and_max;
+
+int bucketNum(vector<int>& a, int i, int min, int max, int len)
+{
+    return long(a[i] - min) * len / (max - min);
+}
+
+int maximumGap(vector<int>& nums) {
+
+    auto len = nums.size();
+    if(len < 2)
+        return 0;
+    int max_value = 0;
+
+    for(auto& num:nums)
+        max_value = max(max_value,num);
+    int min_value = INT32_MAX;
+    for(auto& num:nums)
+        min_value = min(min_value, num);
+
+    vector<int> bucket_list(len + 1, 0);
+    vector<min_and_max> minmax(len + 1, min_and_max(0,0)); // 记录当前桶最小最大值
+    vector<bool> has_num(len + 1, false);  // 记录当前是否有数
+
+    for(int i = 0; i < len; i ++)
+    {
+        int bucketId = bucketNum(nums, i, min_value, max_value, len);
+        minmax[bucketId].first = has_num[bucketId] ? min(minmax[bucketId].first, nums[i]) : nums[i];
+        minmax[bucketId].second = has_num[bucketId] ? max(minmax[bucketId].second, nums[i]) : nums[i];
+        has_num[bucketId] = true;
+    }
+
+    int resMax = 0;  // 记录最大差值
+    int lastMax = 0; // 记录当前空桶的上一个桶的最大值
+
+    int i = 0;
+    while (i < len + 1){
+        //遍历桶，找到一个空桶
+        while (i < len + 1 && has_num[i])
+            i ++;
+        if(i == len + 1)
+            break;
+        lastMax = minmax[i-1].second;
+        //继续遍历桶，找到下一个非空桶
+        while(i < len + 1 && !has_num[i])
+            i ++;
+        if(i == len + 1)
+            break;
+        resMax = max(resMax, minmax[i].first - lastMax);
+    }
+    return resMax;
+}
+
+
+//函数功能: 计算Catalan的第n项
+//函数参数: n为项数
+//返回值:  第n个Catalan数
+int Catalan(int n)
+{
+    if(n<=1) return 1;
+    int *h = new int [n+1]; //保存临时结果
+    h[0] = h[1] = 1;        //h(0)和h(1)
+    for(int i=2;i<=n;++i)    //依次计算h(2),h(3)...h(n)
+    {
+        h[i] = 0;
+        for(int j = 0; j < i; j++) //根据递归式计算 h(i)= h(0)*h(i-1)+h(1)*h(i-2) + ... + h(i-1)h(0)
+            h[i] += (h[j] * h[i-1-j]);
+    }
+    int result = h[n]; //保存结果
+    delete [] h;       //注意释放空间
+    return result;
+}
+
+
+// 反转链表
+struct ListNode{
+    struct ListNode* next;
+    int val;
+    ListNode(int x):val(x), next(nullptr){}
+};
+// 简单的翻转链表 inplace版的
+ListNode* ReverseList(ListNode* pHead)
+{
+    ListNode* pCurr=pHead;
+    ListNode* pPre=nullptr;
+    ListNode* pNext=nullptr;
+    ListNode* pRes=nullptr;
+
+    while(pCurr!=nullptr)
+    {
+        pNext=pCurr->next;
+        if(pNext == nullptr){
+            pRes=pNext;
+        }
+        pCurr->next=pPre;
+        pPre=pCurr;
+        pCurr=pNext;
+    }
+    return pPre;
+}
+
+
+// leetcode　朋友圈 并查集
+int pre[200]; //存放第i个元素的父节点
+int unionsearch(int root) //查找根结点
+{
+    int son, tmp;
+    son = root;
+    while(root != pre[root])  //寻找根结点
+        root = pre[root];
+    while(son != root)   //路径压缩
+    {
+        tmp = pre[son];
+        pre[son] = root;
+        son = tmp;
+    }
+    return root;
+}
+void join(int root1, int root2)    // 判断是否连通，不连通就合并
+{
+    int x, y;
+    x = unionsearch(root1);
+    y = unionsearch(root2);
+    if(x != y)                     // 如果不连通，就把它们所在的连通分支合并
+        pre[x] = y;
+}
+int findCircleNum(vector<vector<int>>& M)
+{
+    auto row = M.size();
+    auto col = M[0].size();
+    int res = 0;
+
+    for(int i = 0; i < 200; i ++)
+        pre[i] = i;
+
+    for(int i = 0; i < row; i++)
+        for(int j = i+1; j < col; j ++)
+        {
+            if(M[i][j] == 1)
+                join(i,j);
+        }
+
+    for(int i = 0; i < row; i ++)
+    {
+        if(i == pre[i])
+            res ++;
+    }
+
+    return res;
+}
+
+
 
 // 01 连通域矩阵 求连通的1的个数 使用BFS而不是DFS(DFS容易栈溢出)
-// int test(vector<vector<char>>& maze) {
-//    if(maze.empty())
-//        return 0;
-//    int row = maze.size();
-//    int col = maze[0].size();
-//    int num_of_1 = 0;
-//
-//    for (int r = 0; r < row; ++r)
-//        for (int c = 0; c < row; ++c)
-//        {
-//            if (maze[r][c] == '1')
-//                ++ num_of_1;
-//
-//                maze[r][c] = '0';
-//
-//                queue<pair<int, int>> my_queue;
-//
-//                my_queue.push({r, c});
-//
-//                while (!my_queue.empty()) {
-//
-//                    auto rc = my_queue.front();
-//                    my_queue.pop();
-//                    int row = rc.first, col = rc.second;
-//                    if (row - 1 >= 0 && maze[row - 1][col] == '1') {
-//                        my_queue.push({row - 1, col});
-//                        maze[row - 1][col] = '0';
-//                    }
-//                    if (row + 1 < row && maze[row + 1][col] == '1') {
-//                        my_queue.push({row + 1, col});
-//                        maze[row + 1][col] = '0';
-//                    }
-//                    if (col - 1 >= 0 && maze[row][col - 1] == '1') {
-//                        my_queue.push({row, col - 1});
-//                        maze[row][col - 1] = '0';
-//                    }
-//                    if (col + 1 < col && maze[row][col + 1] == '1') {
-//                        my_queue.push({row, col + 1});
-//                        maze[row][col + 1] = '0';
-//                    }
-//                }
-//
-//            }
-//        }
-//}
-//
+int maze_01(vector<vector<char>>& maze)
+{
+    if(maze.empty())
+        return 0;
+    int Row = maze.size();
+    int Col = maze[0].size();
+    int num_of_1 = 0;
+
+    for (int r = 0; r < Row; ++r)
+        for (int c = 0; c < Col; ++c)
+        {
+            if (maze[r][c] == '1')  // 只要找到一个'1'那么将其附近所有的'1'都变成'0'
+            {
+                ++ num_of_1;
+
+                maze[r][c] = '0';
+
+                queue<pair<int, int>> my_queue;
+
+                my_queue.push({r, c});
+
+                while (!my_queue.empty()) {
+
+                    auto rc = my_queue.front();
+                    my_queue.pop();
+                    int row = rc.first, col = rc.second;
+
+                    if (row - 1 >= 0 && maze[row - 1][col] == '1') {
+                        my_queue.push({row - 1, col});
+                        maze[row - 1][col] = '0';
+                    }
+                    if (row + 1 < Row && maze[row + 1][col] == '1') {
+                        my_queue.push({row + 1, col});
+                        maze[row + 1][col] = '0';
+                    }
+                    if (col - 1 >= 0 && maze[row][col - 1] == '1') {
+                        my_queue.push({row, col - 1});
+                        maze[row][col - 1] = '0';
+                    }
+                    if (col + 1 < Col && maze[row][col + 1] == '1') {
+                        my_queue.push({row, col + 1});
+                        maze[row][col + 1] = '0';
+                    }
+                }
+            }
+        }
+    return num_of_1;
+}
 
 
 // 最小公倍数
-//int min_sub(int num1, int num2)
+int min_sub(int num1, int num2)
+{
+    int x, y;
+    x = num1;
+    y = num2;
+    while(num1 != num2) {           //循环条件为两数不相等
+        if(num1 > num2)             //如果第一个数大于第二个数
+            num1 = num1 - num2;     //两数相减
+        else
+            num2 = num2 - num1;
+    }
+
+    return x*y/num1;
+}
+
+// 计算1-n中有多少数字包含１
+int count_how_many_1(int n)
+{
+    int count = 0;      //统计变量
+    int factor = 1;     //分解因子
+    int lower = 0;      //当前处理位的所有低位
+    int higher = 0;     //当前处理位的所有高位
+    int curr =0;        //当前处理位
+
+    while(n/factor != 0)
+    {
+        lower = n - n/factor*factor;        //求得低位
+        curr = (n/factor)%10;               //求当前位
+        higher = n/(factor*10);             //求高位
+
+        switch(curr)
+        {
+            case 0:
+                count += higher * factor;
+                break;
+            case 1:
+                count += higher * factor + lower + 1;
+                break;
+            default:
+                count += (higher+1)*factor;
+        }
+
+        factor *= 10;
+    }
+
+    return count;
+}
+
+
+// 按距离k间隔重排字符串 leetcode-358 加密题　bigo面试题
+// 先用 HashMap 或者Array 对字符串里的字符按出现次数进行统计，按次数由高到低进行排序。
+// 还是先统计字符出现的次数，按出现次数排列组成最大堆。
+// 然后每次从堆中去取topk 的字符排入结果，相应的字符数减1，如此循环，直到所有字符排完。
+
+string rearrangeString(string s, int k)
+{
+    if (k == 0) {
+        return s;
+    }
+    int len = s.size();
+    string result;
+    map<char, int> hash;                                // map from char to its appearance time
+    for(auto ch: s) {
+        ++hash[ch];
+    }
+    priority_queue<pair<int, char>> que;                // using priority queue to pack the most char first
+    for(auto val: hash) {
+        que.push(make_pair(val.second, val.first));
+    }
+    while(!que.empty()) {
+        vector<pair<int, int>> vec;
+        int cnt = min(k, len);
+        for(int i = 0; i < cnt; ++i, --len) {           // try to pack the min(k, len) characters sequentially
+            if(que.empty()) {                           // not enough distinct charachters, so return false
+                return "";
+            }
+            auto val = que.top();
+            que.pop();
+            result += val.second;
+            if(--val.first > 0) {                       // collect the remaining characters
+                vec.push_back(val);
+            }
+        }
+        for(auto val: vec) {
+            que.push(val);
+        }
+    }
+    return result;
+}
+
+
+// leetcode 621　任务调度
+// 先用哈希表或者数组对任务出现的次数进行统计，找出任务出现次数的最大值max_count(有可能是多个)，
+// 然后把这个任务(或者任务对)之间按n个间隔进行分隔排列，然后把其它任务插到这些间隔里面。
+// 由于其它任务出现的次数少于max_count所以肯定能放下，如有空位就是需要空闲(idle)。
+// 最后，还要注意的是，如果空位都插满之后还有任务，那就随便在这些间隔里面插入就可以，
+// 因为间隔长度肯定会大于n，在这种情况下就是任务的总数是最小所需时间。
+
+int leastInterval(vector<char>& tasks, int n)
+{
+    int mx = 0;       // 最长任务出现的次数
+    int mxCnt = 0;    // 最长任务出现的个数
+    vector<int> cnt(26, 0);
+    for (char task : tasks) {
+        ++cnt[task - 'A'];
+        if (mx == cnt[task - 'A']) {
+            ++mxCnt;
+        } else if (mx < cnt[task - 'A']) {
+            mx = cnt[task - 'A'];
+            mxCnt = 1;
+        }
+    }
+    int partCnt = mx - 1;            // 最多个数任务的间隔
+    int partLen = n - (mxCnt - 1);   // 在这些间隔中　插其他同样出现次数的任务　剩下的　如果剩下-1则都插满了　还可以插
+    int emptySlots = partCnt * partLen;
+    int taskLeft = tasks.size() - mx * mxCnt;
+    int idles = max(0, emptySlots - taskLeft);
+    return tasks.size() + idles;
+}
+
+
+
+// 拼多多第二批笔试　第二道算法题 直接用dfs做就可以了 发牌问题
+void dfs(vector<char>& res_one, vector<string>& res, string s1, string s2, string& s1_new, int N)
+{
+    if (s1_new == s2 && s1.size() == 0 && res_one.size() == N)
+    {
+        string ans;
+        for (int i = 0; i < res_one.size(); i ++ )
+        {
+            ans  = res_one[i];
+        }
+        res.push_back(ans);
+        return;
+    }
+
+    while (s1.size())
+    {
+        char tmp = s1[0];            // 取出最左边的
+        s1 = s1.substr(1);           // 然后这个是剩下的
+        // 学学这种写的方式　先push进去　然后pop出来
+        res_one.push_back('d');
+        dfs(res_one, res, s1, s2, s1_new, N);
+        res_one.pop_back();
+
+        res_one.push_back('l');
+        s1_new = tmp + s1_new;   // 将上一个牌的最左边放到新的最左边
+        dfs(res_one, res, s1, s2, s1_new, N);
+        s1_new = s1_new.substr(1);
+        res_one.pop_back();
+
+        res_one.push_back('r');
+        s1_new = s1_new + tmp; // 将上一个牌的最左边放到新的最右边
+        dfs(res_one, res, s1, s2, s1_new, N);
+        s1_new = s1_new.substr(0, s1_new.length() - 1);
+        res_one.pop_back();
+
+    }
+
+    return;
+}
+int fake_main()
+{
+    int T;
+    cin >> T;
+
+    string s1;
+    string s2;
+    string s1_new;
+
+    while (T--)
+    {
+        cin >> s1;
+        cin >> s2;
+        vector<char> res_one;
+        vector<string> res;
+
+        dfs(res_one, res, s1, s2, s1_new, s1.length());
+
+        sort(res.begin(), res.end());
+
+        cout << "{" << endl;
+
+        for (int i = 0; i < res.size(); i ++ )
+        {
+            for (int j = 0; j < s1.length(); j ++)
+            {
+                cout << res[i][j] << " ";
+            }
+            cout << "\n";
+        }
+
+        cout << "}" << endl;
+    }
+
+    return 0;
+}
+
+
+
+// 84　柱状图中的最大矩形
+// https://blog.csdn.net/Prasnip_/article/details/83690038
+int largestRectangleArea(vector<int>& heights)
+{
+    heights.push_back(0);     // 在最后面放一个0以计算将所有数据导出来的结果
+    auto len = heights.size();
+    stack<int> my_stack;
+    long res = 0;
+    long width;
+    long min_height;
+    stack<int> weight;         // 这个存储宽度的栈与my_stack同步操作
+
+
+    for(int i = 0; i < len; i ++)
+    {
+
+        if(my_stack.empty())
+        {
+            my_stack.push(heights[i]);
+            weight.push(1);        // 正常的都是１
+            continue;
+        }
+        if(my_stack.top() > heights[i])
+        {
+            width = 0;
+            min_height = INT32_MAX;
+            while (!my_stack.empty() && my_stack.top() >= heights[i])
+            {
+                long temp = my_stack.top();
+                long temp_height = weight.top();
+
+                width += temp_height;
+                min_height = min(min_height, temp);
+                res = max(res, width*min_height);
+
+                my_stack.pop();
+                weight.pop();
+            }
+        }
+
+        my_stack.push(heights[i]);
+        weight.push(1+width);  // 因为把高的都去掉了　但是要保留他们的宽度
+        width = 0;
+    }
+
+    return res;
+}
+
+
+// leetcode 单调递增数
+// 这道题用贪心　738
+int monotoneIncreasingDigits(int N)
+{
+    vector<int> nums;
+    long interval = 1000000000;
+    bool flag = false;
+    long resn = N;
+    while(interval)
+    {
+        auto bit = N/interval;
+        if(bit == 0 && !flag)
+        {
+            interval /= 10;
+            continue;
+        }
+        nums.push_back(bit);
+        flag = true;
+        if(interval == 1)
+            break;
+        N %= interval;
+        interval /= 10;
+    }
+    int max_index = 0;
+    long max_value = 0;
+    bool is_result = true;
+    for(int i = 0; i < nums.size()-1; i ++)
+    {
+        if(nums[i] <= nums[i+1])
+        {
+            if(nums[i] > max_value) {
+                max_index = i;
+                max_value = nums[i];
+            }
+        } else
+        {
+            if(nums[i] > max_value) {
+                max_index = i;
+                max_value = nums[i];
+            }
+            is_result = false;
+            break;
+        }
+    }
+
+    if(is_result)
+        return resn;
+
+    nums[max_index] -= 1;
+    for(int i = max_index + 1; i < nums.size(); i ++)
+    {
+        nums[i] = 9;
+    }
+
+    long res = 0;
+    long mul = pow(10, nums.size()-1);
+    for(int i = 0; i < nums.size(); i ++)
+    {
+        res += nums[i] * mul;
+        mul /= 10;
+    }
+    return res;
+};
+
+
+// 单词拆分 leetcode 139　动态规划 dp
+bool wordBreak(string s, vector<string>& wordDict) {
+
+    if(s.empty() || wordDict.empty())
+        return false;
+
+    // dp[i]表示字符串的前i个字符能否拆分成wordDict
+    vector<bool> dp(s.size() + 1, false);
+    unordered_set<string> m(wordDict.begin(), wordDict.end());
+    dp[0] = true;
+    for(int i = 1; i <= s.size(); i ++)
+    {
+        for(int j = 0; j < i; j ++)
+        {
+            if(dp[j] && m.find(s.substr(j, i-j)) != m.end())
+            {
+                dp[i] = true;
+                break;
+            }
+        }
+    }
+    return dp[s.size()];
+
+}
+
+
+// 单词搜索 leetcode 79
+class Solution_79
+{
+public:
+    bool exist(vector<vector<char>> &board, string word)
+    {
+        if (board.size() == 0)
+            return false;
+        h = board.size();
+        w = board[0].size();
+        for (int i = 0; i < w; i++)
+            for (int j = 0; j < h; j++)
+                if (search(board, word, 0, i, j))
+                    return true;
+        return false;
+    }
+
+    bool search(vector<vector<char>> &board,
+                const string &word, int d, int x, int y)
+    {
+        if (x < 0 || x == w || y < 0 || y == h || word[d] != board[y][x])
+            return false;
+
+        if (d == word.length() - 1)
+            return true;
+
+        char cur = board[y][x];
+        board[y][x] = 0;  // 注意这里必须设置为0 代表没有已经走过
+        bool found = search(board, word, d + 1, x + 1, y)
+                     || search(board, word, d + 1, x - 1, y)
+                     || search(board, word, d + 1, x, y + 1)
+                     || search(board, word, d + 1, x, y - 1);
+        board[y][x] = cur;  // 但是回来的时候记得复原
+        return found;
+    }
+
+private:
+    int w;
+    int h;
+
+};
+
+// 圆圈中最后剩下的数字 找规律求解出来 牛客原题
+int lastRemaining(int n, int m)
+{
+    if(n < 1 || m < 1)
+        return -1;
+
+    int last = 0;
+    for(int i = 2; i <= n; i ++)
+        last = (last + m) % i;
+    return last;
+}
+
+
+
+//　假设f(m,s)表示投第m个骰子时，点数之和s出现的次数,投第m个骰子时的点数之和只与投第m-1个骰子时有关。
+//递归方程：f(m,s)=f(m-1,s-1)+f(m-1,s-2)+f(m-1,s-3)+f(m-1,s-4)+f(m-1,s-5)+f(m-1,s-6)，
+// 表示本轮点数和为s出现次数等于上一轮点数和为s-1，s-2，s-3，s-4，s-5，s-6出现的次数之和。
+//初始条件：第一轮的f(1),f(2),f(3),f(4),f(5),f(6)均等于1.
+//需要求的是：f(n , n)、 f(n, n+1)....f(n, 6*n)
+
+// leetcode 1155 掷骰子的N中方法
+int numRollsToTarget(int d, int f, int target)
+{
+
+
+
+}
+
+
+
+// 携程第一道　分割区间的题　自己有点理解不好
+// aabbcddc -> 2,2,4
+//int fake_main()
 //{
-//    int x, y;
-//    x = num1;
-//    y = num2;
-//    while(num1 != num2) {           //循环条件为两数不相等
-//        if(num1 > num2)             //如果第一个数大于第二个数
-//            num1 = num1 - num2;     //两数相减
-//        else
-//            num2 = num2 - num1;
+//    string s;
+//    cin >> s;
+//    unordered_map<char, int> m;
+//    unordered_map<char, bool> flag;
+//    int sum = 0, cur = 0;
+//    vector<int> res;
+//    for (int i = 0; i < s.size(); i++)
+//        m[s[i]]++;
+//    for (int i = 0; i < s.size(); i++) {
+//        if (flag.find(s[i]) == flag.end()) {
+//            sum += m[s[i]];
+//            flag[s[i]] = true;
+//        }
+//        cur++;
+//        if (cur == sum) {
+//            res.push_back(cur);
+//            cur = 0;
+//            sum = 0;
+//        }
 //    }
-//
-//    return x*y/num1;
+//    for (int i = 0; i < res.size(); i++) {
+//        if (i != res.size() - 1)
+//            cout << res[i] << ',';
+//        else
+//            cout << res[i] << endl;
+//    }
+//    return 0;
 //}
+
+
+// 携程第三道　求最短旅游路线　dp
+void helper(int idx, int nums, int &res, int cur, vector<vector<pair<int, int>>> &neigh, vector<bool> &flag) {
+    if (idx == 0 && flag[idx] == true) {
+        if (nums == flag.size())
+            res = min(res, cur);
+        return;
+    }
+    for (int i = 0; i < neigh[idx].size(); i++) {
+        if (flag[neigh[idx][i].first] == false) {
+            flag[neigh[idx][i].first] = true;
+            helper(neigh[idx][i].first, nums + 1, res, cur + neigh[idx][i].second, neigh, flag);
+            flag[neigh[idx][i].first] = false;
+        }
+    }
+}
+int fakemain3() {
+    int n, m;
+    cin >> n >> m;
+    if (n == 1) {
+        cout << 0 << endl;
+        return 0;
+    }
+    vector<vector<pair<int, int>>> neigh(n);
+    while (m--) {
+        int a, b, t;
+        cin >> a >> b >> t;
+        neigh[a].push_back(make_pair(b, t));
+        neigh[b].push_back(make_pair(a, t));
+    }
+    vector<bool> flag(n, false);
+    int res = INT_MAX;
+    helper(0, 0, res, 0, neigh, flag);
+    if (res == INT_MAX)
+        cout << -1 << endl;
+    else
+        cout << res << endl;
+    return 0;
+}
+
+
+
+// 最长公共子序列(不是子串)
+// 其中dp[i][j]表示 A数组前i个和B数组前j个中的满足要求子序列的最长值
+int max_common_str1(string& a, string& b)
+{
+    auto length = a.size() > b.size() ? a.size() : b.size();
+    int dp[length+1][length+1];
+    memset(dp, 0, sizeof(dp));
+
+    for(int i = 0; i < a.size(); i ++)
+        for(int j = 0; j < b.size(); j ++)
+        {
+            if(a[i] == b[j])
+                dp[i+1][j+1] = dp[i][j] + 1;
+            else
+            {
+                dp[i+1][j+1] = max(dp[i][j+1], dp[i+1][j]);
+            }
+        }
+    return dp[a.size()][b.size()];
+}
+
+// 最长公共子子数组(也是子串)　leetcode 718
+// dp[i][j]表示  以A[i]B[j]为结尾的相同子串的最大长度
+int findLength(vector<int>& A, vector<int>& B) {
+
+    auto len1 = A.size();
+    auto len2 = B.size();
+    auto len = max(len1, len2);
+
+    int dp[len+1][len+1];
+    memset(dp, 0, sizeof(dp));
+    int max_length = 0;
+
+    for(int i = 0; i < len1; i ++)
+        for(int j = 0; j < len2; j ++)
+        {
+            if(A[i] == B[j])
+                dp[i+1][j+1] = dp[i][j] + 1;
+            max_length = max(max_length, dp[i+1][j+1]);
+        }
+    return max_length;
+}
+
+
+
+//
+enum Status
+{
+    UNKNOWN = 0,
+    BAD,
+    GOOD
+};
+
+bool canJump(vector<int>& nums) {
+
+    auto len = nums.size();
+
+    vector<Status> status(len, Status::UNKNOWN);
+    status[len-1] = Status::GOOD;
+    for(int i = len-2; i >= 0; i --)
+    {
+        int furthest_len = min(i + nums[i], int(len - 1));
+        for(int j = i + 1; j <= furthest_len; j ++)
+        {
+            if(status[j] == Status::GOOD)
+            {
+                status[i] = Status::GOOD;
+                break;
+            }
+        }
+    }
+    return status[0] == Status::GOOD;
+}
+
+
+
+
+/*-----字符串快慢指针类------*/
+
+
+
+
 
 
 
@@ -168,84 +985,84 @@ void backtrack_order(vector<int> &nums,vector<vector<int>> &res,int i){
 
 
 
-// 华为笔试第三题 逻辑计算 和 加减乘除类似
-// 遇到& 有三种情况 要考虑 & 的优先级
-// 第一种遇到正常字符或者（，那么就把这个（）内取值，或者正常数字作为第二个数，
-// 接着循环，如果遇到&或者|或者直接到末尾了表示&该计算了，就把第一个数和第二个数做个&操作，作为外层的第一个数
-
-int dfs_normal(string &s, int start_index, int end_index);
-int dfs_kh(int &index, string &s) {
-    for (int i = index; i< s.size(); ++i) {
-        if (s[i] == '(')
-            dfs_kh(++i, s);
-        else if (s[i] == ')') {
-            bool res = dfs_normal(s, index, i);
-            index = i;
-            return res;
-        }
-    }
-}
-
-int dfs_normal(string &s, int start_index, int end_index) {
-    int first;
-    int second=-1;
-    bool fei = false;
-    for (int i = start_index; i < end_index; ++i) {
-        if (s[i] == '(') {
-            first = dfs_kh(++i, s);
-        }
-        else if (s[i] == '&') {
-            bool fei2 = false;
-            int second2;
-            if (fei) {
-                first = first ^ 1;
-                fei = false;
-            }
-            int j;
-            for (j = i + 1; j < end_index;++j) {  // 因为&的优先级高 所以内循环
-                if (s[j] == '(') {
-                    second2 = dfs_kh(++j, s);
-                }
-                else if (s[j] == '|'||s[j]=='&') {
-                    if (fei2)
-                        second2 = second2 ^ 1;
-                    first = first & second2;
-                    i = j - 1;
-                    break;
-                }
-                else if (s[j] == '!')
-                    fei2 = true;
-                else
-                    second2 = s[j];
-            }
-            if (j == end_index) {
-                first = first&second2;
-                i = j - 1;
-            }
-        }
-        else if (s[i] == '|') {
-            second = dfs_normal(s, i + 1, end_index);
-            break;
-        }
-        else if (s[i] == '!') {
-            fei = true;
-        }
-        else {
-            first = s[i] - '0';
-        }
-    }
-    if (fei) {
-        first = first ^ 1;
-    }
-    if (second == -1)
-        return first;
-    return first|second;
-}
-
-// 这样调用
-//string s;
-//cin >> s;
-//cout << dfs_normal(s, 0, s.size());
+//// 华为笔试第三题 逻辑计算 和 加减乘除类似
+//// 遇到& 有三种情况 要考虑 & 的优先级
+//// 第一种遇到正常字符或者（，那么就把这个（）内取值，或者正常数字作为第二个数，
+//// 接着循环，如果遇到&或者|或者直接到末尾了表示&该计算了，就把第一个数和第二个数做个&操作，作为外层的第一个数
+//
+//int dfs_normal(string &s, int start_index, int end_index);
+//int dfs_kh(int &index, string &s) {
+//    for (int i = index; i< s.size(); ++i) {
+//        if (s[i] == '(')
+//            dfs_kh(++i, s);
+//        else if (s[i] == ')') {
+//            bool res = dfs_normal(s, index, i);
+//            index = i;
+//            return res;
+//        }
+//    }
+//}
+//
+//int dfs_normal(string &s, int start_index, int end_index) {
+//    int first;
+//    int second=-1;
+//    bool fei = false;
+//    for (int i = start_index; i < end_index; ++i) {
+//        if (s[i] == '(') {
+//            first = dfs_kh(++i, s);
+//        }
+//        else if (s[i] == '&') {
+//            bool fei2 = false;
+//            int second2;
+//            if (fei) {
+//                first = first ^ 1;
+//                fei = false;
+//            }
+//            int j;
+//            for (j = i + 1; j < end_index;++j) {  // 因为&的优先级高 所以内循环
+//                if (s[j] == '(') {
+//                    second2 = dfs_kh(++j, s);
+//                }
+//                else if (s[j] == '|'||s[j]=='&') {
+//                    if (fei2)
+//                        second2 = second2 ^ 1;
+//                    first = first & second2;
+//                    i = j - 1;
+//                    break;
+//                }
+//                else if (s[j] == '!')
+//                    fei2 = true;
+//                else
+//                    second2 = s[j];
+//            }
+//            if (j == end_index) {
+//                first = first&second2;
+//                i = j - 1;
+//            }
+//        }
+//        else if (s[i] == '|') {
+//            second = dfs_normal(s, i + 1, end_index);
+//            break;
+//        }
+//        else if (s[i] == '!') {
+//            fei = true;
+//        }
+//        else {
+//            first = s[i] - '0';
+//        }
+//    }
+//    if (fei) {
+//        first = first ^ 1;
+//    }
+//    if (second == -1)
+//        return first;
+//    return first|second;
+//}
+//
+//// 这样调用
+////string s;
+////cin >> s;
+////cout << dfs_normal(s, 0, s.size());
 
 
 // 美团第一题 字符串特定规则排序
@@ -272,44 +1089,11 @@ bool my_cam(string& a, string& b)
     return len1 < len2;
 }
 
-int my_partition(vector<string>& data, int start, int end)
-{
-    auto length = data.size();
-    if(data.empty() || start < 0 || end >= length)
-        return -1;
 
-//    int index = random(start, end);  这个随机函数有问题
-    int index = start;
-    swap(data[index], data[end]);
 
-    int small = start - 1;
-    for(index = start; index < end; index ++)
-    {
-        if(my_cam(data[index], data[end]))  // 逆序
-        {
-            ++ small;
-            if(small != index)
-                swap(data[index], data[small]);
-        }
-    }
-    ++ small;
-    swap(data[small], data[end]);
 
-    return small;
-}
 
-void my_quick_sort(vector<string>& strlist, int begin, int end)
-{
-    if(begin == end)
-        return;
-    int index = my_partition(strlist, begin, end);
-    if(index == -1)
-        return;
-    if(index > begin)
-        my_quick_sort(strlist, begin, index-1);
-    if(index < end)
-        my_quick_sort(strlist, index + 1, end);
-}
+
 // 输入部分
 //vector<string> test;
 //vector<string> empty_str;
@@ -450,6 +1234,7 @@ void my_quick_sort(vector<string>& strlist, int begin, int end)
 //    cout << out;
 
 
+
 // 不定长数组输入 回车结束
 //while(cin>>num)
 //{
@@ -457,6 +1242,7 @@ void my_quick_sort(vector<string>& strlist, int begin, int end)
 //    if (getchar()=='\n')
 //        break;
 //}
+
 
 //    拼多多笔试最后一题 搭积木的问题 动态规划
 //    int res = 0;
@@ -501,7 +1287,7 @@ void my_quick_sort(vector<string>& strlist, int begin, int end)
 // 拼多多第二题 dfs题
 
 //bool dfs(int n, vector<bool>&visited, vector<vector<int>>&find_by_first, vector<pair<char, char>>&s_vec, int cur_node) {
-//    if (n == s_vec.size()&& s_vec[cur_node].second==s_vec[0].first)
+//    if (n == s_vec.sie()&& s_vec[cur_node].second==s_vec[0].first)
 //        return true;
 //    auto &next_node = find_by_first[s_vec[cur_node].second-'A'];
 //    for (int i = 0; i != next_node.size(); ++i) {
@@ -534,6 +1320,7 @@ void my_quick_sort(vector<string>& strlist, int begin, int end)
 //    else
 //        cout << "false";
 //    return 0;
+
 
 
 // 网易互娱第一题 算1的个数
@@ -614,39 +1401,159 @@ void my_quick_sort(vector<string>& strlist, int begin, int end)
 //
 //}
 
-
 // 网易互娱第三题 不是很难 双指针即可
-//int T;
-//cin >> T;
-//while (T > 0) {
-//T--;
-//string s;
-//cin >> s;
-//int res=0;
-//int start = 0;
-//int end = 0;
-//int count = 0;
-//
-//if (s.empty()) {
-//cout << res << endl;
-//break;
-//}
-//while (end < s.size()) {
-//if (s[end] != 'N') {
-//count++;
-//}
-//end++;
-//if (count >= 3) {
-//while (start < end) {
-//if (s[start] != 'N') {
-//count--;
-//}
-//start++;
-//if (count <= 2)
-//break;
-//}
-//}
-//res = max(res, end - start);
-//}
-//cout << res << endl;
-//}
+int netease_main3()
+{
+    int T;
+    cin >> T;
+
+    while (T > 0)
+    {
+        T--;
+        string s;
+        cin >> s;
+        int res=0;
+        int start = 0;
+        int end = 0;
+        int count = 0;
+
+        if (s.empty())
+        {
+            cout << res << endl;
+            break;
+        }
+        while (end < s.size())
+        {
+            if (s[end] != 'N') {
+            count++;
+            }
+        end++;
+        if (count >= 3) {
+        while (start < end) {
+        if (s[start] != 'N') {
+        count--;
+        }
+        start++;
+        if (count <= 2)
+        break;
+        }
+        }
+        res = max(res, end - start);
+        }
+        cout << res << endl;
+        }
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+//　这个函数执行5次打印　12345
+void test()
+{
+    static int a = 0;
+    a += 1;
+    cout << a;
+}
+
+// leetcode 864　获取所有钥匙的最短路径
+// 广搜的一个经典题
+vector<string> maze = {"@.a.#",
+                       "###.#",
+                       "b.A.B"};
+
+int shortestPathAllKeys(vector<string>& grid)
+{
+    int start_x = 0;
+    int start_y = 0;
+    int row = grid.size();
+    int col = grid[0].size();
+    int n = 0;          // 共有多少把钥匙
+
+    /*find key and lock*/
+    for(int i = 0;i < row; ++i){
+        for(int j = 0;j < col; ++j){
+            if(grid[i][j] >= 'a' && grid[i][j] <= 'z'){
+                n++;
+            }
+            if(grid[i][j] == '@'){
+                start_x = i;
+                start_y = j;
+            }
+        }
+    }
+
+    int mask = (1<<n) - 1;    // 如果是两把钥匙　那么状态就是　(1<<2)-1 = 011 也就是第0位代表第一把钥匙　第1为代表第二把钥匙
+    int visit[30][30][128];   // 2^7 = 128  收集不同的状态　
+    int step = -1;
+    int d[4][2] = {{0,1},{0,-1},{1,0},{-1,0}};
+    queue<pair<pair<int,int>,int>> qu;    // 状态变量  用于记录每一步的情况　保证不同分支不会走重复的路
+
+    /*initial*/
+    memset(visit,0,sizeof(visit));
+    qu.push(make_pair(make_pair(start_x,start_y),0));
+    visit[start_x][start_x][0] = true;
+
+    /*get*/
+    while(!qu.empty()) {
+        int mx = qu.size();
+        step++;
+
+        for (int i = 0; i < mx; ++i) {
+            int x = qu.front().first.first;
+            int y = qu.front().first.second;
+            int state = qu.front().second;
+            qu.pop();
+
+            if (state == mask) {
+                return step;
+            }
+
+            for (int j = 0; j < 4; ++j) {
+                int x1 = x + d[j][0];
+                int y1 = y + d[j][1];
+                if (x1 >= 0 && y1 >= 0 && x1 < row && y1 < col) {
+                    /*wall*/
+                    if (grid[x1][y1] == '#') {
+                        continue;
+                    } else if (grid[x1][y1] >= 'a' && grid[x1][y1] <= 'f') {
+                        /*key*/
+                        int currState = state | (1 << (grid[x1][y1] - 'a'));
+                        if (!visit[x1][y1][currState]) {
+                            visit[x1][y1][currState] = 1;
+                            qu.push(make_pair(make_pair(x1, y1), currState));
+                        }
+                    } else if (grid[x1][y1] >= 'A' && grid[x1][y1] <= 'F') {
+                        /*lock*/
+                        if (!visit[x1][y1][state]) {
+                            if (state & (1 << (grid[x1][y1] - 'A'))) {
+                                visit[x1][y1][state] = 1;
+                                qu.push(make_pair(make_pair(x1, y1), state));
+                            }
+                        }
+                    } else if (grid[x1][y1] == '.' || grid[x1][y1] == '@') {
+                        /*room*/
+                        if (!visit[x1][y1][state]) {
+                            visit[x1][y1][state] = 1;
+                            qu.push(make_pair(make_pair(x1, y1), state));
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+    return -1;
+}
+
+
+// 找零钱系列问题，如果物品是固定的，那么可以使用贪心做，如果是动态的，就需要背包做了

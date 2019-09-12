@@ -6,6 +6,8 @@
 #include <exception>
 #include <sstream>
 #include <string>
+#include <iterator>
+#include <algorithm>
 
 // 其实不建议在头文件中使用using 有空了改一下
 using namespace std;

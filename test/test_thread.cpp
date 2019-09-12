@@ -144,8 +144,8 @@ void test_thread_4()
 void test_thread_5()
 {
     std::thread t(hello);
-    std::cout << t.hardware_concurrency() << std::endl;//可以并发执行多少个(不准确)
-    std::cout << "native_handle " << t.native_handle() << std::endl;//可以并发执行多少个(不准确)
+    std::cout << t.hardware_concurrency() << std::endl;                 //可以并发执行多少个(不准确)
+    std::cout << "native_handle " << t.native_handle() << std::endl;    //可以并发执行多少个(不准确)
     t.join();
     std::thread a(hello);
     a.detach();
