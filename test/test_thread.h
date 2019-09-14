@@ -10,7 +10,8 @@ void test_thread_2();
 void test_thread_3();
 void test_thread_4();
 void test_thread_5();
-
+void test_thread_6();
+void test_openmp_1();
 
 
 

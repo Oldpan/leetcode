@@ -125,6 +125,7 @@ void test_vector();
 void test_lower_bound();
 void test_priority();
 void test_dynamic_cast();
+void test_lambda_function();
 
 
 

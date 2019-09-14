@@ -5,6 +5,8 @@
 #include "test_thread.h"
 #include <thread>
 #include <mutex>
+#include <chrono>
+#include <future>
 #include <iostream>
 #include <unistd.h>
 
@@ -141,6 +143,7 @@ void test_thread_4()
     sleep(10);
 }
 
+
 void test_thread_5()
 {
     std::thread t(hello);
@@ -159,3 +162,47 @@ void test_thread_5()
         thread.join();
     std::cout << "All threads joined!\n";
 }
+
+
+// std::packaged_task  可以包裹一个函数, 有点类似std::function，
+// 不同之处在于这个可以通过get_future返回std::future对象来获取异步执行的函数结果。
+void test_thread_6()
+{
+    std::packaged_task<int()> task([]()
+                                   {
+                                       std::cout << "packaged_task start!"<<std::endl;
+                                       std::chrono::milliseconds dur(10000);
+                                       std::this_thread::sleep_for(dur);
+                                       return 10000;
+                                   });
+    std::future<int> fuResult = task.get_future();
+    std::thread t_task(std::move(task));
+    t_task.detach();
+    std::cout << "detach..." << std::endl;
+    std::cout << fuResult.get() << std::endl;
+}
+
+
+// std::async提供异步执行的方法，std::future = std::async(...),
+// 函数执行完成后可以通过std::future.get()获取到执行函数的返回值。
+void test_thread_7()
+{
+    std::future<int> fuResult = std::async([]()
+   {
+       std::this_thread::sleep_for(std::chrono::seconds(10));
+       return 1;
+   });
+    std::cout<<"detach..."<<std::endl;
+    std::cout<<fuResult.get()<<std::endl;
+}
+
+void test_openmp_1()
+{
+#pragma omp parallel for
+    for (int i = 0; i < 10; i++)
+    {
+        cout << i << endl;
+    }
+}
+
+

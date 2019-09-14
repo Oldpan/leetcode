@@ -11,38 +11,14 @@
 #include <cstring>
 
 #include "test/test_concepts.h"
-//#include "test/test_thread.h"
+#include "test/test_thread.h"
 #include "test/test_design_pattern.h"
 #include "utils.h"
 //#include "Concepts/learnOpencv.h"
+#include "test/c_polymorphism.h"
 
 using namespace std;
 
-
-//vector<int> GetLeastNumbers_Solution(vector<int> input, int k) {
-//
-//    priority_queue<int, vector<int>> min_heap;
-//    vector<int> result;
-//    for(int i = 0; i < input.size(); i ++)
-//    {
-//        if(min_heap.size() < k)
-//        {
-//            min_heap.push(input[i]);
-//            continue;
-//        }
-//        if(min_heap.top() > input[i])
-//        {
-//            min_heap.pop();
-//            min_heap.push(input[i]);
-//        }
-//    }
-//    while(!min_heap.empty()){
-//        result.push_back(min_heap.top());
-//        min_heap.pop();
-//    }
-//
-//    return result;
-//}
 
 
 
@@ -51,7 +27,54 @@ using namespace std;
 int main()
 {
 
-    test_dynamic_cast();
+    test_poly_c_2();
+
+
+
+
+
+
+
+//    cout << LastRemaining_Solution(5,1);
+
+
+//    string test;
+//    getline(cin, test);
+//    vector<pair<char,int>> res;
+//    map<char, pair<int, int>> char2index2count;
+//
+//    int index = 0;
+//    for(int i = 0; i < test.size(); i ++)
+//    {
+//        if(char2index2count.count(test[i]))
+//            char2index2count[test[i]].second ++;
+//        else
+//        {
+//            pair<int, int> temp = {index, 1};
+//            char2index2count[test[i]] = temp;
+//        }
+//        index ++;
+//    }
+//
+//    for(auto& tt :char2index2count)
+//    {
+//        if(tt.second.second <= 5 && tt.second.second >= 3)
+//        {
+//            res.push_back({tt.first, tt.second.first});
+//        }
+//    }
+//    if(res.empty())
+//        cout << "no";
+//
+//    sort(res.begin(), res.end(), [](const pair<char,int>& a, pair<char,int>& b){
+//        return a.first > b.first;
+//    });
+//
+//    for(auto& temp:res)
+//    {
+//        cout << temp.first;
+//    }
+
 
 
 

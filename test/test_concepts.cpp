@@ -340,3 +340,19 @@ void process(Base* ptr)
     }
 }
 
+// 其中，“外部变量访问方式说明符”可以是=或&，表示{}中用到的、定义在{}外面的变量在{}中是否允许被改变。
+// =表示不允许，&表示允许。
+// 当然，在{}中也可以不使用定义在外面的变量。“-> 返回值类型”可以省略。
+void test_lambda_function()
+{
+    vector<int> data = {1,6,3,9};
+    sort(data.begin(), data.end(), [=](int x, int y) -> bool {return x>y;});
+    for_each(data.begin(), data.end(), [=](int x) {cout << x << " ";});
+
+    cout << endl;
+    for_each(data.begin(), data.end(), [&](int& x) {x *= 2;});
+    for_each(data.begin(), data.end(), [=](int x) {cout << x << " ";});
+
+}
+
+

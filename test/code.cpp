@@ -59,27 +59,21 @@ vector<string> Permutation(string str) {
     {
         int j,k;
         res.push_back(str);
-
         for(j = len - 2; j >= 0 && str[j] > str[j+1]; j --);
-
         if(j < 0)
             break;
-
         for(k = len - 1; k > j && str[k] < str[j]; k --);
-
         swap(str[k], str[j]);
 
         for(int l = j + 1, r = len - 1; l < r; l ++, r --)
             swap(str[l], str[r]);
     }
-
     return res;
 }
 
 // 最长子数组的最大和一维dp即可  leetcode 53　动态规划
 int FindGreatestSumOfSubArray(vector<int> array)
 {
-
     auto len = array.size();
     if(len < 2)
         return array[0];
@@ -1050,13 +1044,18 @@ int findLength(vector<int>& A, vector<int>& B) {
 
 
 
+
+
+
 // 华为笔试第三题 逻辑计算 和 加减乘除类似
 // 遇到& 有三种情况 要考虑 & 的优先级
 // 第一种遇到正常字符或者（，那么就把这个（）内取值，或者正常数字作为第二个数，
-// 接着循环，如果遇到&或者|或者直接到末尾了表示&该计算了，就把第一个数和第二个数做个&操作，作为外层的第一个数
+// 接着循环，如果遇到&或者|或者直接到末尾了 表示&该计算了，就把第一个数和第二个数做个&操作，作为外层的第一个数
 
 int dfs_normal(string &s, int start_index, int end_index);
-int dfs_kh(int &index, string &s) {
+
+int dfs_kh(int &index, string &s)
+{
     for (int i = index; i< s.size(); ++i) {
         if (s[i] == '(')
             dfs_kh(++i, s);
@@ -1067,40 +1066,45 @@ int dfs_kh(int &index, string &s) {
         }
     }
 }
-int dfs_normal(string &s, int start_index, int end_index) {
+
+int dfs_normal(string &s, int start_index, int end_index)
+{
     int first;
-    int second=-1;
+    int second = -1;
     bool fei = false;
-    for (int i = start_index; i < end_index; ++i) {
+
+    for (int i = start_index; i < end_index; ++i)
+    {
         if (s[i] == '(') {
             first = dfs_kh(++i, s);
         }
         else if (s[i] == '&') {
             bool fei2 = false;
             int second2;
-            if (fei) {
+            if (fei) {  // 先把左边的项确定好
                 first = first ^ 1;
                 fei = false;
             }
             int j;
-            for (j = i + 1; j < end_index;++j) {  // 因为&的优先级高 所以内循环
+            for (j = i + 1; j < end_index; ++j) {    // 因为&的优先级高 所以内循环 不会跳出去再返回结果
                 if (s[j] == '(') {
                     second2 = dfs_kh(++j, s);
                 }
-                else if (s[j] == '|'||s[j]=='&') {
+                else if (s[j] == '|'||s[j]=='&') {  // 到了另一个判断口　先把当前的处理了　然后退出
                     if (fei2)
                         second2 = second2 ^ 1;
                     first = first & second2;
-                    i = j - 1;
+                    i = j - 1;    //　将坐标退回去
                     break;
                 }
                 else if (s[j] == '!')
                     fei2 = true;
                 else
-                    second2 = s[j];
+                    second2 = s[j] - '0';
             }
+            // 如果已经到结尾了
             if (j == end_index) {
-                first = first&second2;
+                first = first & second2;
                 i = j - 1;
             }
         }
@@ -1519,4 +1523,193 @@ int shortestPathAllKeys(vector<string>& grid)
 }
 
 
+// 判断是否平衡二叉树
+struct TreeNode {
+    int val;
+    TreeNode *left;
+    TreeNode *right;
+    TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+};
+bool isBalanced(TreeNode* root, int& depth)
+{
+    if(root == nullptr)
+    {
+        depth = 0;
+        return true;
+    }
+    int left,right;
+    if(isBalanced(root->left, left) && isBalanced(root->right, right))
+    {
+        int diff = left - right;
+        if(diff <= 1 && diff >= -1)
+        {
+            depth = 1 + (left > right ? left : right);  // 一边记录每个树左右子树是否深度一样　一边记录深度
+            return true;
+        }
+    }
+    return false;
+}
+bool isBalanced(TreeNode* root) {
+
+    int depth = 0;
+    return isBalanced(root, depth);
+}
+
+
+// 找到一个数组中某两个数只出现一次　本地编译通过但是牛客上无法通过
+void FindNumsAppearOnce(vector<int> data,int* num1,int *num2)
+{
+
+    set<int> stored_nums;
+    for(auto& num: data)
+    {
+        if(stored_nums.count(num))
+            stored_nums.erase(num);
+        else
+        {
+            stored_nums.insert(num);
+        }
+    }
+    num1 = const_cast<int *>(&(*(stored_nums.begin())));
+    num2 = const_cast<int *>(&(*(++stored_nums.begin())));
+}
+
+
+// 花光N元的钱 最少能买几件商品 库存不限
+// dp是花了多少钱后最少的东西数量
+int min_objects(vector<int> prices, int N)
+{
+    auto len = prices.size();
+    vector<int> dp(N+1, -1);
+    dp[0] = 0;
+    for(int i = 0; i < n; i ++)
+        for(int j = prices[i]; j <= N; j ++)
+        {
+            if(dp[j-prices[i]] != -1)
+            {
+                if(dp[j] == -1)
+                    dp[j] = dp[j-prices[i]] + 1;
+                else
+                    dp[j] = min(dp[j], dp[j-prices[i]]+1);
+            }
+        }
+    return dp[N];
+}
+
+
+// 剑指offer上的
+// 查找排序数组中数字出现的次数　用两个二分查找分别查找最左和最右出现的次数
+int getFirstK(vector<int> data, int k, int start, int end)
+{
+    auto len = data.size();
+    if(start > end)
+        return -1;
+    int mid = (start + end) / 2;
+    int mid_data = data[mid];
+    if(mid_data == k)
+    {
+        if((mid > 0 && data[mid - 1] != k) || mid == 0)  // 如果满足第一个出现k的条件
+            return mid;
+        else
+            end = mid - 1;    // 说明第一个k在这个数的左边
+    } else if(mid_data > k)
+        end = mid - 1;
+    else
+        start = mid + 1;
+    return getFirstK(data, k, start, end);
+}
+int getLastK(vector<int> data, int k, int start, int end)
+{
+    auto len = data.size();
+    if(start > end)
+        return -1;
+    int mid = (start + end) / 2;
+    int mid_data = data[mid];
+    if(mid_data == k)
+    {
+        if((mid < len-1 && data[mid + 1] != k) || mid == len-1)  // 如果满足最后一个出现k的条件
+            return mid;
+        else
+            start = mid + 1;    // 说明第一个k在这个数的左边
+    } else if(mid_data < k)
+        start = mid + 1;
+    else
+        end = mid - 1;
+    return getLastK(data, k, start, end);
+}
+int getNumberOfK(vector<int> data, int k)
+{
+    auto len = data.size();
+    int number = 0;
+    if(!data.empty())
+    {
+        int first = getFirstK(data, k, 0, len-1);
+        int last = getLastK(data, k, 0, len-1);
+        if(first > -1 && last > -1)
+            number = last - first + 1;
+    }
+    return number;
+}
+
+
+// leetcode 4　寻找两个有序数组的中位数
+//寻找a 和 b 数组中，第k个数字
+double find_kth(vector<int> a, int a_begin, vector<int> b, int b_begin, int k) {
+    //当a 或 b 超过数组长度，则第k个数为另外一个数组第k个数
+    if (a_begin >= a.size())
+        return b[b_begin + k - 1];
+    if (b_begin >= b.size())
+        return a[a_begin + k - 1];
+    //k为1时，两数组最小的那个为第一个数
+    if (k == 1)
+        return min(a[a_begin], b[b_begin]);
+
+    int mid_a = INT32_MAX;
+    int mid_b = INT32_MAX;
+    //mid_a / mid_b 分别表示 a数组、b数组中第 k / 2 个数
+    if (a_begin + k / 2 - 1 < a.size())
+        mid_a = a[a_begin + k / 2 - 1];
+    if (b_begin + k / 2 - 1 < b.size())
+        mid_b = b[b_begin + k / 2 - 1];
+    //如果a数组的第 k / 2 个数小于b数组的第 k / 2 个数，表示总的第 k 个数位于 a的第k / 2个数的后半段，或者是b的第 k / 2个数的前半段
+    //由于范围缩小了 k / 2 个数，此时总的第 k 个数实际上等于新的范围内的第 k - k / 2个数，依次递归
+    if (mid_a < mid_b)
+        return find_kth(a, a_begin + k / 2, b, b_begin, k - k / 2);
+    //否则相反
+    return find_kth(a, a_begin, b, b_begin + k / 2, k - k / 2);
+}
+double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2)
+{
+    int m = nums1.size();
+    int n = nums2.size();
+    //处理任何一个nums为空数组的情况
+    if (m == 0) {
+        if (n % 2 != 0)
+            return 1.0 * nums2[n / 2];
+        return (nums2[n / 2] + nums2[n / 2 - 1]) / 2.0;
+    }
+    if (n == 0) {
+        if (m % 2 != 0)
+            return 1.0 * nums1[m / 2];
+        return (nums1[m / 2] + nums1[m / 2 - 1]) / 2.0;
+    }
+    int total = m + n;
+    //总数为奇数，找第 total / 2 + 1 个数
+    if ((total & 1) == 1) {
+        return find_kth(nums1, 0, nums2, 0, total / 2 + 1);
+    }
+    //总数为偶数，找第 total / 2 个数和第total / 2 + 1个数的平均值
+    return (find_kth(nums1, 0, nums2, 0, total / 2) + find_kth(nums1, 0, nums2, 0, total / 2 + 1)) / 2.0;
+}
+
+
+
+
+
+//int test = 1;
+//int &pp = test;
+//int* ppp = &test;
+// cout << sizeof(pp) << sizeof(ppp);  输出一个4一个8
+
 // 找零钱系列问题，如果物品是固定的，那么可以使用贪心做，如果是动态的，就需要背包做了
+
