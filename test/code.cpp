@@ -111,7 +111,7 @@ bool canPartition(vector<int>& nums)
             else
                 dp[i][j] = dp[i-1][j];
         }
-
+    // 如果是求最接近的则是　return sum - 2*dp[len][target];
     return dp[len][target] == target;
 }
 
@@ -1053,7 +1053,6 @@ int findLength(vector<int>& A, vector<int>& B) {
 // 接着循环，如果遇到&或者|或者直接到末尾了 表示&该计算了，就把第一个数和第二个数做个&操作，作为外层的第一个数
 
 int dfs_normal(string &s, int start_index, int end_index);
-
 int dfs_kh(int &index, string &s)
 {
     for (int i = index; i< s.size(); ++i) {
@@ -1066,7 +1065,6 @@ int dfs_kh(int &index, string &s)
         }
     }
 }
-
 int dfs_normal(string &s, int start_index, int end_index)
 {
     int first;
@@ -1703,7 +1701,50 @@ double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2)
 }
 
 
+// leetcode 1027  最长等差数列
+// 输入
+int longestArithSeqLength(vector<int>& A) {
+    if(A.size() <= 2)
+        return A.size();
+    int res = 0;
+    vector<vector<int>> dp(A.size(),vector<int>(20001,1));
+    for(int i = 1;i < A.size();i++)
+        for(int j = 0;j < i;j++)
+        {
+            int sub = A[i] - A[j] + 10000;    // 加10000是为了中和负数　然后开辟20000个为了覆盖　-1000 - 1000
+            dp[i][sub] = max(dp[i][sub],dp[j][sub] + 1);
+            res = max(res,dp[i][sub]);
+        }
+    return res;
+}
 
+
+// leetcode 俄罗斯信封　降维加最长上升子序列
+int maxEnvelopes(vector<vector<int>>& envelopes)
+{
+    if(envelopes.empty())
+        return 0;
+
+    sort(envelopes.begin(), envelopes.end(),
+         [](const vector<int>& a, const vector<int>& b){
+             if(a[0] == b[0])
+                 return a[1] > a[1];
+             return a[0] < b[0];
+         });
+    auto len = envelopes.size();
+
+    vector<int> dp(len + 1, 1);
+    int res = dp[0];
+    for(int i = 1; i < len; i ++)
+        for(int j = 0; j < i; j ++)
+        {
+            if(envelopes[j][0] < envelopes[i][0] && envelopes[j][1] < envelopes[i][1])
+                dp[i] = max(dp[j] + 1, dp[i]);
+        }
+    for(int i = 1; i < len; i ++)
+        res = max(res, dp[i]);
+    return res;
+}
 
 
 //int test = 1;

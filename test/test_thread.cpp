@@ -9,6 +9,7 @@
 #include <future>
 #include <iostream>
 #include <unistd.h>
+#include <deque>
 
 using namespace std;
 
@@ -196,6 +197,7 @@ void test_thread_7()
     std::cout<<fuResult.get()<<std::endl;
 }
 
+
 void test_openmp_1()
 {
 #pragma omp parallel for
@@ -205,4 +207,89 @@ void test_openmp_1()
     }
 }
 
+
+
+
+// 生产者消费者　互斥变量比较
+// 全局队列
+deque<int> g_deque;
+// 全局锁
+mutex g_mutex;
+// 生产者运行标记
+bool producer_is_running = true;
+
+void Produccer()
+{
+    int count = 0;
+
+    do{
+        // 智能锁，初始化后即加锁，保护的范围是代码花括号内，花括号退出即会自动解锁
+        // 可以手动解锁，从而控制互斥锁的细粒度
+        std::unique_lock<std::mutex> locker( g_mutex );
+        // 入队一个数据
+        g_deque.push_front( count );
+        // 提前解锁，缩小互斥锁的细粒度，只针对共享的队列数据进行同步保护
+        locker.unlock();
+
+        std::cout << "生产者    ：我现在库存有 :" << count << std::endl;
+
+        // 放慢生产者生产速度，睡1秒
+        std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
+
+        // 库存自减少
+        count--;
+    } while( count > 0 );
+
+    // 标记生产者打样了
+    producer_is_running = false;
+
+    std::cout << "生产者 ： 我的库存没有了，我要打样了！"  << std::endl;
+}
+
+// 消费者线程函数
+void Consumer(int id)
+{
+    int data = 0;
+
+    do
+    {
+        std::unique_lock<std::mutex> locker( g_mutex );
+        if( !g_deque.empty() )
+        {
+            data = g_deque.back();
+            g_deque.pop_back();
+            locker.unlock();
+
+            std::cout << "消费者[" << id << "] : 我抢到货的编号是 :" << data << std::endl;
+        }
+        else
+        {
+            locker.unlock();
+        }
+    } while( producer_is_running );
+
+    std::cout << "消费者[" << id << "] ：卖家没有货打样了，真可惜，下次再来抢！"  << std::endl;
+}
+
+void test_producer_consumer_1()
+{
+    std::cout << "1 producer start ..." << std::endl;
+    std::thread producer(Produccer);
+
+    std::cout << "5 consumer start ..." << std::endl;
+    std::thread consumer[ 5 ];
+    for(int i = 0; i < 5; i++)
+    {
+        consumer[i] = std::thread(Consumer, i + 1);
+    }
+
+    producer.join();
+
+    for(int i = 0; i < 5; i++)
+    {
+        consumer[i].join();
+    }
+
+    std::cout << "All threads joined." << std::endl;
+}
 

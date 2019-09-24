@@ -133,7 +133,7 @@ vector<int> mergeSort(vector<int>& array, int begin, int end)
 
 
 // 堆排序
-// 调整数组中index位置的数组 使其满足最小根的性质
+// 调整数组中index位置的数组 使其满足最大根的性质
 void heap_insert(vector<int>& array, int index)
 {
     while (array[index] > array[(index-1)/2])  // 当子树大于父子树则

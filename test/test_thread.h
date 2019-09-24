@@ -12,6 +12,7 @@ void test_thread_4();
 void test_thread_5();
 void test_thread_6();
 void test_openmp_1();
+void test_producer_consumer_1();
 
 
 

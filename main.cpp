@@ -9,17 +9,16 @@
 #include <stack>
 #include <map>
 #include <cstring>
+#include <unistd.h>
 
 #include "test/test_concepts.h"
 #include "test/test_thread.h"
-#include "test/test_design_pattern.h"
+//#include "test/test_design_pattern.h"
 #include "utils.h"
 //#include "Concepts/learnOpencv.h"
-#include "test/c_polymorphism.h"
+//#include "test/c_polymorphism.h"
 
 using namespace std;
-
-
 
 
 
@@ -27,7 +26,6 @@ using namespace std;
 int main()
 {
 
-    test_poly_c_2();
 
 
 
@@ -35,7 +33,7 @@ int main()
 
 
 
-//    cout << LastRemaining_Solution(5,1);
+
 
 
 //    string test;
