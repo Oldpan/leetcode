@@ -21,10 +21,21 @@
 using namespace std;
 
 
+struct fun{
+    static int cc;
+    static long bb;
+    char c;
+    int a;
+    char b;
+};
 
+static int pp;
 
 int main()
 {
+    cout << sizeof(fun) << endl;
+    cout << sizeof(int) << endl;
+    cout << sizeof(pp);
 
 
 
